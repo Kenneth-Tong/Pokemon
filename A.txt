@@ -1,0 +1,20 @@
+5 0 0 0 0 5 0 0 0 0 0 0 2 0 0 0 7 Moiz> Hey there! You look like you're heading to the same place I am, and I'm guessing for the same reason.|> I hope to become the next pokemon master!|> But I still have yet to get a pokemon...|> Well, I heard you can get your first pokemon in the poke-center up ahead!|> Hope to see you around, maybe we'll be rivals one day.> What are you waiting for? Go on out there!>< 0 0 0
+0 4 4 4 4 4 4 4 4 4 4 4 4 4 0 0 0 0 0 0
+0 4 5 0 0 0 B 6 To change locations, press space on these dark grey areas!> 0 0 0 0 2 6 Welcome to the town of Andover!> 0 0 0 0 0 5
+4 4 0 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2
+4 2 2 2 8 8 8 8 8 2 2 2 2 5 0 0 0 0 6 Coconut Mall> 0
+4 2 2 2 13 13 8 13 13 2 2 2 2 0 4 4 4 4 4 C
+4 2 2 2 8 8 8 8 8 2 2 2 2 0 4 0 0 0 0 3
+4 2 2 2 2 2 2 2 2 2 2 2 2 0 4 0 7 Fisherman Dan;> Pumpkin Pie> Don't forget your pokemon sometimes get tired and need some energy!> Take this and you can use it to help your pokemon.>Good luck ahead future pokemon master.>< 0 3 3
+4 0 0 0 0 0 0 0 0 0 0 0 2 0 4 0 0 0 3 3
+4 4 4 4 4 4 4 4 4 4 4 0 2 0 4 0 0 3 3 3
+5 0 4 6 The dark green grass is where you can find new Pokemon! You can battle and capture Pokmeon here.> 0 0 0 0 0 0 4 0 2 0 4 0 3 3 3 3
+0 0 4 0 1 1 1 1 1 0 4 0 2 0 4 0 3 3 3 3
+0 0 4 0 1 1 1 1 1 0 4 0 2 0 4 0 3 3 3 3
+0 0 4 0 1 1 1 1 1 0 4 0 2 0 4 0 3 3 3 3
+0 0 4 0 1 1 1 7 Lily> These Digletts are really hard to catch!|> I keep trying to get one but they keep going under the ground when I'm just about to catch it!> Darn these little guys, so annoying.>< 1 0 4 0 2 0 4 3 3 3 3 3
+5 0 4 0 1 1 1 1 1 0 4 0 2 0 4 0 3 3 3 3
+0 0 4 0 0 0 0 0 0 0 4 0 2 0 4 0 0 3 3 3
+0 0 4 4 4 4 4 4 4 4 4 4 4 4 4 0 0 3 3 3
+0 0 0 0 0 0 0 0 5 0 0 0 2 0 0 0 0 0 3 3
+0 0 0 5 0 0 0 0 0 0 0 0 2 0 0 5 0 0 3 3
