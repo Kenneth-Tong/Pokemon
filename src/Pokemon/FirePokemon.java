@@ -22,7 +22,7 @@ public class FirePokemon extends Pokemon {
 	}
 	public ArrayList<String> createMoves() { //12 moves per each
 		int randomHeal = (int) (Math.random() * 9);
-		ArrayList<String> attackList = new ArrayList<String>();
+		ArrayList<String> attackList = new ArrayList<>();
 		ArrayList<String> heaList = new ArrayList<>(Arrays.asList("Revitalize", "Gather", "Rain Dance", "Rest"));
 		ArrayList<String> fireList = new ArrayList<>(Arrays.asList("Fire Blast", "Flare Blitz", "V-create", "Searing Shot", "Flame Throw", "Overheat", "Will o' Whisp", "Volcano", "Ember Shot", "Nitro Flare", "Hot Steps", "Fire Claw"));
 		switch(randomHeal) {
@@ -41,6 +41,9 @@ public class FirePokemon extends Pokemon {
 			case 4:
 				attackList.add(heaList.get(0));
 				attackList.add(heaList.get(2));
+				break;
+			default:
+				super.setHasHealingMove(false);
 				break;
 		}
 		attackList.addAll(fireList);

@@ -22,7 +22,7 @@ public class WaterPokemon extends Pokemon {
 	}
 	public ArrayList<String> createMoves() { //12 moves per each
 		int randomHeal = (int) (Math.random() * 9);
-		ArrayList<String> attackList = new ArrayList<String>();
+		ArrayList<String> attackList = new ArrayList<>();
 		ArrayList<String> heaList = new ArrayList<>(Arrays.asList("Revitalize", "Gather", "Rain Dance", "Rest"));
 		ArrayList<String> waterList = new ArrayList<>(Arrays.asList("Aqua Strike", "Splash", "Water Cannon", "Jet Stream", "Hydro Pump", "Max Geyser", "Surf", "Water Gun", "Whirlpool", "Water Pulse", "Waterfall", "Soak"));
 		switch(randomHeal) {
@@ -41,6 +41,9 @@ public class WaterPokemon extends Pokemon {
 			case 4:
 				attackList.add(heaList.get(0));
 				attackList.add(heaList.get(2));
+				break;
+			default:
+				super.setHasHealingMove(false);
 				break;
 		}
 		attackList.addAll(waterList);

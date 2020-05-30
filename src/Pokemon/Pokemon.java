@@ -126,6 +126,7 @@ public class Pokemon {
 		return false;
 	}
 	public String result(Type t2) {
+		System.out.println(t2.toString());
 		if (new Type(0).toString().equals(t2.toString())) { //fire move
 			if (new Type(0).toString().equals(type.toString())) {
 				return "none"; //nothing

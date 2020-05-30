@@ -34,6 +34,7 @@ public class Things {
 	private boolean tallGrass, passable, person, sign = false, talkedTo, chest, key, door; //talk means there are choices, talkedTo means you're done talking to
 	private Color color;
 	private int amountOfItems = 1; //only applies to chests
+	private Item item;
 
 	public Things(int i, int posX, int posY, int width, int height) {
 		switch(i) {
@@ -132,9 +133,15 @@ public class Things {
 			color = new Color(139,69,19);
 			chest = true;
 			passable = false;
-			ArrayList<String> item = new ArrayList<String>(); //set the item in dialogue as if you're talking to someone
-			item.add(m);
-			dialogue = item;
+			String itemName = m.substring(locationItem(m)); //get item name
+			amountOfItems = Integer.parseInt(m.substring(locationItem(m) - 1)); //get item
+			if(itemName.contains("Pokeball")) {
+				item = new Pokeball("Pokeball", amountOfItems);
+			} else if(itemName.contains("Key")) {
+				item = new Key(itemName, amountOfItems, false); //chests will never have the team rocket key, only joradan
+			} else {
+				item = new HealItem(itemName, amountOfItems);
+			}
 			drawBox = new Rectangle(posX, posY, width, height);
 			hitBox = new Rectangle(posX - 5, posY - 5, width + 10, height + 10);
 			name = "Chest";
@@ -197,20 +204,13 @@ public class Things {
 	public boolean isChest() {
 		return chest;
 	}
-	public String getItem(String m) {
-		String newItemName = "";
-		if(hasInteger(m) > -1) { //this calls for if there is an integer in the chest
-			newItemName = m.substring(hasInteger(m));
-			amountOfItems = Integer.valueOf(m.substring(0, hasInteger(m) - 1)); //set amount of Pokeballs you get
-		} else {
-			newItemName = m;
-		}
-		return newItemName;
+	public Item getItem() {
+		return item;
 	}
 	public int getAmountOfItems() {
 		return amountOfItems;
 	}
-	public int hasInteger(String m) {
+	public int locationItem(String m) {
 		boolean integer = false;
 		for(int i = 0; i < m.length(); i++) {
 			char a = m.charAt(i);

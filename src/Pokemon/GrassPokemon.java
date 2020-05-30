@@ -22,7 +22,7 @@ public class GrassPokemon extends Pokemon {
 	}
 	public ArrayList<String> createMoves() { //12 moves per each
 		int randomHeal = (int) (Math.random() * 9);
-		ArrayList<String> attackList = new ArrayList<String>();
+		ArrayList<String> attackList = new ArrayList<>();
 		ArrayList<String> heaList = new ArrayList<>(Arrays.asList("Revitalize", "Gather", "Rain Dance", "Rest"));
 		ArrayList<String> grassList = new ArrayList<>(Arrays.asList("Vine Whip", "Razor Leaf", "Seed Cannon", "Roots Spore", "Leaf Storm", "Apple Acid", "Leech Seed", "Wood Hammer", "Seed Flare", "Energy Ball", "Cotton Spore", "Bullet Speed"));
 		switch(randomHeal) {
@@ -44,6 +44,7 @@ public class GrassPokemon extends Pokemon {
 				break;
 			default:
 				super.setHasHealingMove(false);
+				break;
 		}
 		attackList.addAll(grassList);
 		return attackList;
