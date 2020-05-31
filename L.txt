@@ -1,9 +1,9 @@
 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
-10 4 4 4 4 4 4 4 4 4 4 4 4 12 3 Apples> 10 10 10 10 10 10
+10 4 4 4 4 4 4 4 4 4 4 4 4 12 3 Super Bike> 10 10 10 10 10 10
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 10 10 10 10 10 10
-10 4 4 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
+10 15 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 10
-10 4 4 4 4 7 Team Rocket Goon#> Onyx3> I see you've made it into our base!|> I don't know how you got here but our team leader wouldn't be happy, so I'm going to have to force you out!#> I may have lost, but you will never beat our leader!>< 4 4 4 4 4 4 4 4 4 4 7 Nurse Linda!> Wow another trainer! Not many trainers make it here.|> After Team Rocket is defeated you should tell Terry, I'm sure he'd be happy.|> Do you need your Pokemon to be healed?/> yes Alright, here you go! Remember to be careful.> no Come back if you need any help!>< 4 4 10
+10 4 4 4 4 7 Team Rocket Goon#> Onix3> I see you've made it into our base!|> I don't know how you got here but our team leader wouldn't be happy, so I'm going to have to force you out!#> I may have lost, but you will never beat our leader!>< 4 4 4 4 4 4 4 4 4 4 7 Nurse Linda!> Wow another trainer! Not many trainers make it here.|> After Team Rocket is defeated you should tell Terry, I'm sure he'd be happy.|> Do you need your Pokemon to be healed?/> yes Alright, here you go! Remember to be careful.> no Come back if you need any help!>< 4 4 10
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 K
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 6 Team Rocket's Gym> 4 10
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 10

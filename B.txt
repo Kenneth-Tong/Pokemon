@@ -1,7 +1,7 @@
 10 10 10 10 10 10 10 10 10 A 10 10 10 10 10 10 10 10 10 10
 10 10 10 10 10 10 10 6 Poke-center> 9 9 9 9 10 10 10 10 10 10 10 10
 10 10 6 Take a seat while you wait> 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 10 10
-10 8 9 9 9 9 9 9 9 9 9 9 9 7 Trainer Maddison;> 10 Pokeballs> Welcome to the Andover Poke-center!|> I'm guessing you're new around here so as a complement to new trainers we give out free starter Pokeballs.|> You can use these later to catch pokemon!> Have fun training!>< 9 9 9 9 8 10
+10 8 9 9 9 9 9 9 9 9 9 9 9 7 Trainer Maddison;> 10 Pokeball> Welcome to the Andover Poke-center!|> I'm guessing you're new around here so as a complement to new trainers we give out free starter Pokeballs.|> You can use these later to catch pokemon!> Have fun training!>< 9 9 9 9 8 10
 10 8 7 Nick> My pokemon are always so tired!|> Maybe I should take the day off and buy some stuff from the market next door for my pokemon...> I hear the shop near the poke-center has lots of good food!>< 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 8 10
 10 8 9 9 9 10 9 9 9 9 9 9 9 10 9 9 9 9 8 10
 10 8 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 8 10

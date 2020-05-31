@@ -5,7 +5,7 @@
 4 2 2 2 8 8 8 8 8 2 2 2 2 5 0 0 0 0 6 Coconut Mall> 0
 4 2 2 2 13 13 8 13 13 2 2 2 2 0 4 4 4 4 4 C
 4 2 2 2 8 8 8 8 8 2 2 2 2 0 4 0 0 0 0 3
-4 2 2 2 2 2 2 2 2 2 2 2 2 0 4 0 7 Fisherman Dan;> Pumpkin Pie> Don't forget your pokemon sometimes get tired and need some energy!> Take this and you can use it to help your pokemon.>Good luck ahead future pokemon master.>< 0 3 3
+4 2 2 2 2 2 2 2 2 2 2 2 2 0 4 0 7 Fisherman Dan!> Hey there Pokemon trainer!|> You know, sometimes there are doors you can open, but you need a key for them.|> Try looking in chests and talking to people to get them!>< 0 3 3
 4 0 0 0 0 0 0 0 0 0 0 0 2 0 4 0 0 0 3 3
 4 4 4 4 4 4 4 4 4 4 4 0 2 0 4 0 0 3 3 3
 5 0 4 6 The dark green grass is where you can find new Pokemon! You can battle and capture Pokmeon here.> 0 0 0 0 0 0 4 0 2 0 4 0 3 3 3 3
@@ -17,4 +17,4 @@
 0 0 4 0 0 0 0 0 0 0 4 0 2 0 4 0 0 3 3 3
 0 0 4 4 4 4 4 4 4 4 4 4 4 4 4 0 0 3 3 3
 0 0 0 0 0 0 0 0 5 0 0 0 2 0 0 0 0 0 3 3
-0 0 0 5 0 0 0 0 0 0 0 0 2 0 0 5 0 0 3 3
+0 0 0 5 0 0 0 0 0 0 0 0 2 0 0 5 12 Key> 0 3 3

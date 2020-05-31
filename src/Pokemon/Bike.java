@@ -1,16 +1,30 @@
 package Pokemon;
 
 public class Bike extends Item{
-    private Player player;
-    public Bike(String name, int x, Player p) {
+    boolean superBike = false;
+    public Bike(String name, int x) {
         super(name, x);
-        player = p;
         super.setDescription("A bike used to travel faster!");
+        if(name.contains("Super"))
+         superBike = true;
     }
-    public void setBike(boolean n) {
-        if(n)
-            player.setIsOnBike(true);
-        else
-            player.setIsOnBike(false);
+    public void setBike(boolean n, Player player) {
+        if(!superBike) {
+            if(n) {
+                player.setIsOnSuperBike(false);
+                player.setIsOnBike(true);
+            } else {
+                player.setIsOnSuperBike(false);
+                player.setIsOnBike(false);
+            }
+        } else {
+            if(n) {
+                player.setIsOnBike(false);
+                player.setIsOnSuperBike(true);
+            } else {
+                player.setIsOnBike(false);
+                player.setIsOnSuperBike(false);
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ public class Player {
 	private String name, trainerType;
 	private Color color;
 	private int velocity = 3, Height = 15, Width = 15, posX = 0, posY = 0, lastX = 0, lastY = 0, moveX = 0, moveY = 0, pokemonDollar = 0;
-	private boolean lost = false, isOnBike = false;
+	private boolean lost = false, isOnBike = false, isSuperBike = false;
 
 	public Player(String name) {
 		this.name = name;
@@ -70,7 +70,7 @@ public class Player {
 		return posY;
 	}
 
-	public ArrayList<Item> getInventory() {
+	public ArrayList<Item> getInventoryArrayList() {
 		return inventory;
 	}
 
@@ -83,14 +83,31 @@ public class Player {
 		}
 		return returnItem;
 	}
+	public Item[] getInventory() {
+		Item[] list = new Item[inventory.size()];
+		int i = 0;
+		for(Item n: inventory) {
+			list[i] = n;
+			i++;
+		}
+		return list;
+	}
 
 	public void addInventory(Item a) {
 		for(Item n: inventory) {
 			if(a.equals(n)) {
-				n.addItem(a.getAmount()); //combinds amount of items
+				n.addItem(a.getAmount()); //combined amount of items
 				return;
 			}
 		}
+		inventory.add(a);
+	}
+
+	public void setIsOnSuperBike(boolean n) {
+		if(n)
+			velocity = 7;
+		else
+			velocity = 3;
 	}
 
 	public String getName() {
@@ -115,6 +132,10 @@ public class Player {
 
 	public ArrayList<Pokemon> getPokemon() {
 		return pokemonList;
+	}
+
+	public Pokemon getPokemon(int i) {
+		return pokemonList.get(i);
 	}
 
 	public void setColor(Color color) {
@@ -144,6 +165,8 @@ public class Player {
 	public boolean getIsOnBike() {
 		return isOnBike;
 	}
+
+	public boolean getIsOnSuperBike() { return isSuperBike; }
 
 	public int getVelocity() {
 		return velocity;
@@ -184,15 +207,6 @@ public class Player {
 		lost = true;
 		return false;
 	}
-
-	public int hasBike() {
-		for (Item n : inventory) {
-			if (n instanceof Bike) {
-				return inventory.indexOf(n);
-			}
-		}
-		return -1;
-	}
 	public int hasKey(boolean TeamRocket) { //if i'm looking for team rocket key
 		if(TeamRocket) {
 			for (Item n : inventory) {
@@ -217,26 +231,12 @@ public class Player {
 		}
 		return -1;
 	}
-	public int hasPokeball() {
+	public String[] getInventoryNames() {
+		String[] list = new String[inventory.size()];
+		int i = 0;
 		for (Item n : inventory) {
-			if (n instanceof Pokeball) {
-				return inventory.indexOf(n);
-			}
-		}
-		return -1;
-	}
-	public int hasHealItem() {
-		for (Item n : inventory) {
-			if (n instanceof HealItem) {
-				return inventory.indexOf(n);
-			}
-		}
-		return -1;
-	}
-	public ArrayList<String> getInventoryNames() {
-		ArrayList<String> list = new ArrayList<String>();
-		for (Item n : inventory) {
-			list.add(n.getName());
+			list[i] = n.getName();
+			i++;
 		}
 		return list;
 	}

@@ -2,6 +2,7 @@ package Pokemon;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Pokemon {
 	private String name, location, effective; //effective tells attacks and effectiveness
@@ -10,29 +11,54 @@ public class Pokemon {
 	private Color color;
 	private int health, maxHealth; //maxHealth calls when you reset their health to max, health is current health
 	private boolean hasHealingMove = true;
-	public Pokemon(String location) {
+	public Pokemon(String location, int i) {
 		int healthLocation = location.compareTo("A") + 1; //depending on where on the map the pokemon is, the more powerful it is
 		int random = (int) (Math.random() * 15 * healthLocation) + 10;
 		health = random;
 		maxHealth = random;
 		this.location = location;
+		type = new Type(i);
+		setColor(i);
+		setMoves();
+		setName();
 	}
-	public void setHasHealingMove(boolean x) {
-		hasHealingMove = x;
+	public Pokemon(String location, int i, String pokemon) {
+		int healthLocation = location.compareTo("A") + 1; //depending on where on the map the pokemon is, the more powerful it is
+		int random = (int) (Math.random() * 15 * healthLocation) + 10;
+		health = random;
+		maxHealth = random;
+		this.location = location;
+		type = new Type(i);
+		setColor(i);
+		setMoves();
+		setName(pokemon);
 	}
-	public void setColor(Color c) { color = c; }
+	public void setColor(int n) {
+		switch(n) {
+			case 0:
+				color = Color.RED;
+				break;
+			case 1:
+				color = Color.GREEN;
+				break;
+			case 2:
+				color = Color.BLUE;
+				break;
+			case 3:
+				color = Color.lightGray;
+				break;
+		}
+	}
+
+	public PokemonMove[] getPokemonMoves() {
+		return PokemonMoves;
+	}
 	public Color getColor() { return color; }
 	public Type getType() {
 		return type;
 	}
-	public void setType(int n) {
-		type = new Type(n);
-	}
 	public int getHealth() {
 		return health;
-	}
-	public PokemonMove[] getPokemonMoves() {
-		return PokemonMoves;
 	}
 	public PokemonMove getPokemonMoves(int i) {
 		return PokemonMoves[i];
@@ -43,6 +69,24 @@ public class Pokemon {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public void setName() {
+		String[] list = new String[0];
+		switch(type.toString()) {
+			case "Fire":
+				list = new String[] {"Litwick", "Charmander", "Flareon", "Torchic", "Magby", "Tepig", "Volcarona", "Litten"};
+				break;
+			case "Grass":
+				list = new String[] {"Skiddo", "Petilil", "Bulbasaur", "Bellsprout", "Hoppip", "Skiploom", "Applin", "Rowlet", "Deerling", "Shiftry", "Jumpluff"};
+				break;
+			case "Water":
+				list = new String[] {"Golduck", "Poliwag", "Seel", "Shellder", "Krabby", "Horsea", "Staryu", "Vaporeon", "Magikarp", "Mudkip", "Wailmer", "Corphish", "Buizel"};
+				break;
+			case "Rock":
+				list = new String[] {"Bonsly", "Sudowoodo", "Omanyte", "Golem", "Onix", "Larvitar", "Lunatone", "Solrock", "Armaldo", "Tryunt", "Crustle", "Relicanth", "Dwebble"};
+				break;
+		}
+		name = list[(int) (Math.random() * list.length)];
 	}
 	public PokemonMove getAttack(int i) {
 		return PokemonMoves[i];
@@ -95,25 +139,63 @@ public class Pokemon {
 			return true;
 		return false;
 	}
-	public void setMoves(ArrayList<String> n) {
+	public void setMoves() {
+		ArrayList<String> attackList = new ArrayList<>();
+		switch(type.toString()) {
+			case "Fire":
+				attackList = new ArrayList<>(Arrays.asList("Fire Blast", "Flare Blitz", "V-create", "Searing Shot", "Flame Throw", "Overheat", "Will o' Whisp", "Volcano", "Ember Shot", "Nitro Flare", "Hot Steps", "Fire Claw"));
+				break;
+			case "Water":
+				attackList = new ArrayList<>(Arrays.asList("Aqua Strike", "Splash", "Water Cannon", "Jet Stream", "Hydro Pump", "Max Geyser", "Surf", "Water Gun", "Whirlpool", "Water Pulse", "Waterfall", "Soak"));
+				break;
+			case "Grass":
+				attackList = new ArrayList<>(Arrays.asList("Vine Whip", "Razor Leaf", "Seed Cannon", "Roots Spore", "Leaf Storm", "Apple Acid", "Leech Seed", "Wood Hammer", "Seed Flare", "Energy Ball", "Cotton Spore", "Bullet Speed"));
+				break;
+			case "Rock":
+				attackList = new ArrayList<>(Arrays.asList("Roll Out", "Head Smash", "Earthquake", "Sand storm", "Dig", "Fissure", "Magnitude", "Mud Bomb", "Bone Rush", "Spikes", "Sand Tomb", "Sand Attack"));
+				break;
+		}
+		int randomHeal = (int) (Math.random() * 9);
+		ArrayList<String> heaList = new ArrayList<>(Arrays.asList("Revitalize", "Gather", "Rain Dance", "Rest"));
+		switch(randomHeal) {
+			case 1:
+				attackList.add(heaList.get(1));
+				attackList.add(heaList.get(0));
+				break;
+			case 2:
+				attackList.add(heaList.get(2));
+				attackList.add(heaList.get(1));
+				break;
+			case 3:
+				attackList.add(heaList.get(3));
+				attackList.add(heaList.get(1));
+				break;
+			case 4:
+				attackList.add(heaList.get(0));
+				attackList.add(heaList.get(2));
+				break;
+			default:
+				hasHealingMove = false;
+				break;
+		}
 		int[] movesPicked = new int[4];
 		for(int i = 0; i < 4; i++) {
-			int random = (int) (Math.random() * n.size());
+			int random = (int) (Math.random() * attackList.size());
 			while(contains(movesPicked, random)) {
-				random = (int) (Math.random() * n.size());
+				random = (int) (Math.random() * attackList.size());
 			}
 			movesPicked[i] = random;
 		}
-		int i = 0, damageCheck = location.compareTo("A");
+		int i = 0, damageCheck = location.compareTo("A") + 1;
 		for(int x: movesPicked) {
 			int max = (int) (Math.random() * 5) + 10 * damageCheck;
 			int min = (int) (Math.random() * 5) + 5 * damageCheck;
-			if(x < 2 && hasHealingMove) { //healing move
+			if(x > attackList.size() - 3 && hasHealingMove) { //healing move
 				int movePoint = (int) (Math.random() * 4) + 3;
-				setMove(i, new PokemonMove(n.get(x), max, min, movePoint));
+				setMove(i, new PokemonMove(attackList.get(x), max, min, movePoint));
 			} else { //damage dealer
 				int movePoint = (int) (Math.random() * 4) + 6;
-				setMove(i, new PokemonMove(n.get(x), max, min, movePoint, getType()));
+				setMove(i, new PokemonMove(attackList.get(x), max, min, movePoint, getType()));
 			}
 			i++;
 		}
@@ -126,7 +208,6 @@ public class Pokemon {
 		return false;
 	}
 	public String result(Type t2) {
-		System.out.println(t2.toString());
 		if (new Type(0).toString().equals(t2.toString())) { //fire move
 			if (new Type(0).toString().equals(type.toString())) {
 				return "none"; //nothing

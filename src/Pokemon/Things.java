@@ -2,11 +2,15 @@ package Pokemon;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /*
  * Letter = change location
- * 14 = dark rock
+ * 15 = dark rock
  * 13 = White
  * 12 = chest
  * 11 = Sand
@@ -31,9 +35,9 @@ public class Things {
 	private Rectangle hitBox, drawBox; //draw box is only for drawing, hitBox depends on whether it is a person or an object
 	private String connectingLocation = "", message = " ", name = ""; //name is only for person, message is only for sign
 	private ArrayList<String> dialogue; //person dialogue only
-	private boolean tallGrass, passable, person, sign = false, talkedTo, chest, key, door; //talk means there are choices, talkedTo means you're done talking to
+	private boolean tallGrass = false, passable = false, person = false, sign = false, talkedTo = false, chest = false, rocket = false, door = false; //talk means there are choices, talkedTo means you're done talking to
 	private Color color;
-	private int amountOfItems = 1; //only applies to chests
+	private int amountOfItems; //only applies to chests
 	private Item item;
 
 	public Things(int i, int posX, int posY, int width, int height) {
@@ -92,8 +96,9 @@ public class Things {
 		hitBox = drawBox = new Rectangle(posX, posY, width, height);
 		drawBox = new Rectangle(posX, posY, width, height); //Make the collisions more smooth
 	}
-	public Things(int posX, int posY, int width, int height) { //door that can be opened
-		color = new Color(205,133,63);
+	public Things(boolean rocket, int posX, int posY, int width, int height) { //door that can be opened
+		this.rocket = rocket;
+		color = new Color(222,184,135);
 		passable = false;
 		door = true;
 		hitBox = new Rectangle(posX - 5, posY - 5, width + 10, height + 10);
@@ -103,22 +108,8 @@ public class Things {
 		color = new Color(105,105,105);
 		passable = true;
 		connectingLocation = n; 
-		hitBox = new Rectangle(posX, posY, width, width);
-		drawBox = new Rectangle(posX, posY, width, width);
-		key = true; //can be passed with key
-	}
-	public boolean hasKey(Player p) {
-		if(p.getInventoryNames().contains(" Key ")) {
-			return true;
-		}
-		return false;
-	}
-	public void openDoor() {
-		if(key) {
-			passable = true;
-			color = new Color(154,205,50); //there is only one door, to the castle
-			hitBox = drawBox; //cannot interact anymore
-		}
+		hitBox = new Rectangle(posX, posY, width, height);
+		drawBox = new Rectangle(posX, posY, width, height);
 	}
 	public Things(int n, String m, int posX, int posY, int width, int height) { //int doesn't do anything, is a sign
 		if(n == 6) { //sign
@@ -133,8 +124,14 @@ public class Things {
 			color = new Color(139,69,19);
 			chest = true;
 			passable = false;
-			String itemName = m.substring(locationItem(m)); //get item name
-			amountOfItems = Integer.parseInt(m.substring(locationItem(m) - 1)); //get item
+			String itemName = "";
+			if(locationItem(m) > -1) {
+				itemName = m.substring(locationItem(m)); //get item name
+				amountOfItems = Integer.parseInt(m.substring(0, locationItem(m) - 1)); //get item
+			} else {
+				itemName = m;
+				amountOfItems = 1;
+			}
 			if(itemName.contains("Pokeball")) {
 				item = new Pokeball("Pokeball", amountOfItems);
 			} else if(itemName.contains("Key")) {
@@ -152,13 +149,67 @@ public class Things {
 		color = new Color(138,43,226);
 		name = n;
 		dialogue = m;
+		if(name.contains(";")) { //give item only
+				String itemName = "";
+				if(locationItem(m.get(0)) > -1) {
+					itemName = m.get(0).substring(locationItem(m.get(0))); //get item name
+					amountOfItems = Integer.parseInt(m.get(0).substring(0, locationItem(m.get(0)) - 1)); //get item
+				} else {
+					itemName = m.get(0);
+					amountOfItems = 1;
+				}
+				if(itemName.contains("Pokeball")) {
+					item = new Pokeball("Pokeball", amountOfItems);
+				} else if(itemName.contains("Key")) {
+					item = new Key(itemName, amountOfItems, true); //jordan is only person with key
+				} else if(itemName.contains("Bike")) {
+					item = new Bike("Bike", amountOfItems);
+				} else {
+					item = new HealItem(itemName, amountOfItems);
+				}
+		}
 		passable = false;
 		person = true;
 		hitBox = new Rectangle(posX - 5, posY - 5, width + 10, height + 10);
 		drawBox = new Rectangle(posX, posY, width, height);
 		talkedTo = false;
 	}
-
+	public void openDoor(File f) { //completely changes file
+		String replace = ""; //will be replacing part of file
+		Scanner reader = null;
+		boolean hasDoor = false;
+		try {
+			reader = new Scanner(f);
+		} catch (FileNotFoundException e) {
+			System.out.println(f.toString() + "does not exist");
+		}
+		while(reader.hasNext()) {
+			String line = "";
+			try { //regular drawing, not a connection
+				assert reader != null;
+				line = reader.next();
+			} catch (Exception e) { //leads to another path
+				System.out.println("Line not found");
+			}
+			if(!hasDoor) {
+				if (line.equals("15"))
+					line = "4";
+				hasDoor = true;
+			}
+			System.out.println(line);
+			replace += line + " ";
+		}
+		System.out.println(replace);
+		try {
+			FileWriter writer = new FileWriter(f, false);
+			writer.write(replace);
+			writer.close();
+		} catch (Exception e) {
+			System.out.println("Could not write");
+		}
+		reader.close();
+	}
+	public boolean isRocket() { return rocket; }
 	public String getMessage() {
 		return message;
 	}
@@ -191,6 +242,9 @@ public class Things {
 	}
 	public ArrayList<String> getDialogue() {
 		return dialogue;
+	}
+	public String getDialogue(int i) {
+		return dialogue.get(i);
 	}
 	public String getName() {
 		return name;

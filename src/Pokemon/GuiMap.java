@@ -26,7 +26,7 @@ import javax.swing.*;
 
 public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	private final Player player;
-	public static Clip clipMusic, clipFight;
+	public static Clip clipMusic, clipFight, getItem;
 	public static long clipTimePosition;
 	private final Things[][] currentBoard;
 	private Things opponentPlayer = null;
@@ -164,7 +164,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								talkToPerson(currentBoard[i][c]);
 							}
 						} else if (currentBoard[i][c].isDoor() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
-							if (currentBoard[i][c].hasKey(player)) {
+							if(player.hasKey(false) < 0 && player.hasKey(true) < 0) {
+								JOptionPane.showMessageDialog(null, "You do not have the key to the door", "Locked", JOptionPane.ERROR_MESSAGE);
+							}
+							else if (player.hasKey(false) > -1 && !currentBoard[i][c].isRocket()) {
 								int answer = JOptionPane.showConfirmDialog(null,
 										"Do you use a key to unlock the door?",
 										"Door",
@@ -173,10 +176,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								if (answer == JOptionPane.YES_OPTION) {
 									clipTimePosition = clipMusic.getMicrosecondPosition();
 									clipMusic.stop();
-									currentBoard[i][c].openDoor();
+									currentBoard[i][c].openDoor(new File(currentLocation + ".txt"));
 									try {
 										AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-										Clip getItem = AudioSystem.getClip();
+										getItem = AudioSystem.getClip();
 										getItem.open(inputStream);
 										getItem.start();
 									} catch (UnsupportedAudioFileException | IOException | LineUnavailableException d) {
@@ -184,19 +187,42 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									}
 									JOptionPane.showMessageDialog(null, "You unlocked the door!", "Unlocked", JOptionPane.INFORMATION_MESSAGE);
 								}
+								getItem.stop();
 								clipMusic.setMicrosecondPosition(clipTimePosition);
 								clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
+								setBoard(currentLocation);
+								return;
+							} else if (player.hasKey(true) > -1 && currentBoard[i][c].isRocket()) {
+								int answer = JOptionPane.showConfirmDialog(null,
+										"Do you use a key to unlock Team Rocket's door?",
+										"Door",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE);
+								if (answer == JOptionPane.YES_OPTION) {
+									clipTimePosition = clipMusic.getMicrosecondPosition();
+									clipMusic.stop();
+									currentBoard[i][c].openDoor(new File(currentLocation + ".txt"));
+									try {
+										AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
+										getItem = AudioSystem.getClip();
+										getItem.open(inputStream);
+										getItem.start();
+									} catch (UnsupportedAudioFileException | IOException | LineUnavailableException d) {
+										d.printStackTrace();
+									}
+									JOptionPane.showMessageDialog(null, "You unlocked Team Rocket's door!", "Unlocked", JOptionPane.INFORMATION_MESSAGE);
+								}
+								getItem.stop();
+								clipMusic.setMicrosecondPosition(clipTimePosition);
+								clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
+								setBoard(currentLocation);
 								return;
 							}
-							JOptionPane.showMessageDialog(null, "You do not have the key to the door", "Locked", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				}
 			}
 		}
-	}
-	public void endMessage() {
-
 	}
 	public void readMessage(Things n) {
 		JOptionPane.showMessageDialog(null, n.getMessage());
@@ -209,7 +235,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 					for (int c = 0; c < currentBoard[0].length; c++) {
 						if (currentBoard[i][c].isTallGrass() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							int random = (int) (Math.random() * 1000000000) + 1; //low chance!
-							if (random % 71 == 0) {
+							if (random % 711 == 0) {
 								createPokemon(); //creates the Pokemon that is found
 								PokemonFight(appear, false); //the fight starts
 							}
@@ -240,7 +266,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	}
 
 		public void PokemonActions () {
-			if (!playerTurn && appear.getHealth() != 0) {
+			if (!playerTurn && appear.getHealth() > 0) {
 				int move;
 				PokemonMove moveName;
 				if (appear.getHealth() < appear.getMaxHealth() / 4 && appear.hasHealingMove()) {
@@ -333,17 +359,20 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 
 		public void actionPerformed (ActionEvent e){
 			if (!pokemonFight) {
-				if (player.isLost() && opponentPlayer != null) {
+				if (player.isLost()) {
 					currentLocation = "B";
 					player.setLost(false);
 					JOptionPane.showMessageDialog(null, "Be careful next time! Give your Pokemon a rest for a bit before you continue " + player.getName() + ".", "Nurse Joy", JOptionPane.PLAIN_MESSAGE);
 					String PokemonHealed = heal();
 					JOptionPane.showMessageDialog(null, "Pokemon Healed:" + PokemonHealed, "", JOptionPane.INFORMATION_MESSAGE);
 					opponentPlayer = null; //reset progress
+					appear = null;
 					hotbar.reset();
-				} else if (opponentPlayer != null && !player.isLost()) { //this should not run if the player has just started
-					opponentPlayer.setTalkedTo(true); //they won!
-					opponentPlayer = null;
+				} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
+					if(opponentPlayer != null) {
+						opponentPlayer.setTalkedTo(true); //they won!
+						opponentPlayer = null;
+					}
 					appear = null;
 					hotbar.reset();
 				}
@@ -362,33 +391,19 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			if (!pokemonFight) {
 				if (!currentLocation.equals("I") && !currentLocation.equals("J")) {
 					int randomPokemon = (int) (Math.random() * 4);
-					switch (randomPokemon) {
-						case 0:
-							appear = new GrassPokemon(currentLocation);
-							break;
-						case 1:
-							appear = new WaterPokemon(currentLocation);
-							break;
-						case 2:
-							appear = new RockPokemon(currentLocation);
-							break;
-						case 3:
-							appear = new FirePokemon(currentLocation);
-							break;
-					}
+					appear = new Pokemon(currentLocation, randomPokemon);
 				} else {
-					appear = new RockPokemon(currentLocation); //only rock Pokemon spawn in this area
+					appear = new Pokemon(currentLocation, 3); //only rock Pokemon spawn in this area
 				}
 			}
 			JOptionPane.showMessageDialog(null, "You found a wild " + appear.getName() + "!", "Wild Pokemon", JOptionPane.INFORMATION_MESSAGE);
-			System.out.println(appear.getType());
 		}
 		public void checkX () {
 			for (int i = 0; i < currentBoard.length; i++) { //draw board
 				for (int c = 0; c < currentBoard[0].length; c++) {
-					if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
+					if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
 						player.resetX();
-					} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+					} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 						player.resetX();
 					}
 				}
@@ -400,9 +415,9 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		public void checkY () {
 			for (int i = 0; i < currentBoard.length; i++) { //draw board
 				for (int c = 0; c < currentBoard[0].length; c++) {
-					if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
+					if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
 						player.resetY();
-					} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+					} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() ||  currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 						player.resetY();
 					}
 				}
@@ -431,22 +446,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 					return;
 				}
 				k = 1;
-				String type = n.getDialogue().get(0).substring(n.getDialogue().get(0).length() - 1);
+				String typeString = n.getDialogue().get(0).substring(n.getDialogue().get(0).length() - 1);
+				int typeInt = Integer.parseInt(typeString);
 				String PokemonName = n.getDialogue().get(0).substring(0, n.getDialogue().get(0).length() - 1);
-				switch (type) {
-					case "0":
-						pokemonFighter = new FirePokemon(currentLocation, PokemonName);
-						break;
-					case "1":
-						pokemonFighter = new GrassPokemon(currentLocation, PokemonName);
-						break;
-					case "2":
-						pokemonFighter = new WaterPokemon(currentLocation, PokemonName);
-						break;
-					case "3":
-						pokemonFighter = new RockPokemon(currentLocation, PokemonName);
-						break;
-				}
+				pokemonFighter = new Pokemon(currentLocation, typeInt, PokemonName);
 			}
 			if (name.contains("~")) {
 				shop = true;
@@ -454,23 +457,27 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			}
 			if (n.isChest()) {
 				if (!n.isTalkedTo()) {
-					String itemName = "Null";
+					String itemName = n.getItem().getName();
 					if (n.getAmountOfItems() > 1) //add the s
 						itemName = n.getItem().getName() + "s";
+					String amount = Integer.toString(n.getAmountOfItems());
+					if(amount.equals("1"))
+						amount = "a";
 					player.addInventory(n.getItem());
 					clipTimePosition = clipMusic.getMicrosecondPosition();
 					clipMusic.stop();
 					try {
 						AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-						Clip getItem = AudioSystem.getClip();
+						getItem = AudioSystem.getClip();
 						getItem.open(inputStream);
 						getItem.start();
 					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 						e.printStackTrace();
 					}
-					JOptionPane.showMessageDialog(null, "You got " + n.getAmountOfItems() + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "You got " + amount + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
 					JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", name, JOptionPane.INFORMATION_MESSAGE);
 					n.setTalkedTo(true);
+					getItem.stop();
 					clipMusic.setMicrosecondPosition(clipTimePosition);
 					clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 				} else {
@@ -489,12 +496,12 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			if (!n.isTalkedTo()) { //this will only set
 				for (int i = k; i < n.getDialogue().size(); i++) {
 					if (answer.equals("")) {
-						if (n.getDialogue().get(i).contains("|")) {
-							JOptionPane.showMessageDialog(null, n.getDialogue().get(i).substring(0, n.getDialogue().get(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
-						} else if (n.getDialogue().get(i).contains("/")) {
-							if (n.getDialogue().get(i + 1).contains("yes ") || n.getDialogue().get(i + 1).contains("no ")) {
+						if (n.getDialogue(i).contains("|")) {
+							JOptionPane.showMessageDialog(null, n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
+						} else if (n.getDialogue(i).contains("/")) {
+							if (n.getDialogue(i + 1).contains("yes ") || n.getDialogue(i + 1).contains("no ")) {
 								int o = JOptionPane.showConfirmDialog(null,
-										n.getDialogue().get(i).substring(0, n.getDialogue().get(i).length() - 1),
+										n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1),
 										name,
 										JOptionPane.YES_NO_OPTION,
 										JOptionPane.QUESTION_MESSAGE);
@@ -506,7 +513,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									return;
 							} else { //a question that isn't yes or no
 								answer = JOptionPane.showInputDialog(null,
-										n.getDialogue().get(i).substring(0, n.getDialogue().get(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
+										n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
 								if (answer == null || (("".equals(answer)))) //if they cancel
 								{
 									return;
@@ -516,7 +523,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								answer += " "; //make sure it's full response
 								while (findAnswerLocation(n, answer) == -1) {
 									answer = JOptionPane.showInputDialog(null,
-											n.getDialogue().get(i).substring(0, n.getDialogue().get(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
+											n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
 									if (answer == null || (("".equals(answer)))) {
 										return;
 									}
@@ -525,15 +532,15 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									answer += " "; //make sure it's full response
 								}
 							}
-						} else if (n.getDialogue().get(i).contains("#")) {
-							JOptionPane.showMessageDialog(null, n.getDialogue().get(i).substring(0, n.getDialogue().get(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
+						} else if (n.getDialogue(i).contains("#")) {
+							JOptionPane.showMessageDialog(null, n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
 							JOptionPane.showMessageDialog(null, name + " has challenged you to a fight!", name, JOptionPane.INFORMATION_MESSAGE);
 							opponentPlayer = n;
 							PokemonFight(pokemonFighter, true);
 							i = n.getDialogue().size() - 1; //make sure the thing ends
-						} else if (n.getDialogue().get(i).contains("~")) { //shop
+						} else if (n.getDialogue(i).contains("~")) { //shop
 							ArrayList<String> itemsPrices = new ArrayList<>();
-							String line = n.getDialogue().get(i).substring(n.getDialogue().get(i).indexOf(":") + 1);
+							String line = n.getDialogue(i).substring(n.getDialogue(i).indexOf(":") + 1);
 							for (int h = 0; h < line.length() - 1; h++) {
 								if (line.startsWith(",", h)) { //better way of saying line.substring(i, i + 1).equals(",")
 									itemsPrices.add(line.substring(0, h));
@@ -555,7 +562,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								effectiveness[d] = Integer.parseInt(itemsPrices.get(d).substring(itemEnd + 1));
 							}
 							String item = (String) JOptionPane.showInputDialog(null,
-									n.getDialogue().get(i).substring(0, n.getDialogue().size() - 1),
+									n.getDialogue(i).substring(0, n.getDialogue().size() - 1),
 									name,
 									JOptionPane.PLAIN_MESSAGE,
 									null,
@@ -598,7 +605,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								return;
 							}
 						} else {
-							JOptionPane.showMessageDialog(null, n.getDialogue().get(i), name, JOptionPane.PLAIN_MESSAGE);
+							JOptionPane.showMessageDialog(null, n.getDialogue(i), name, JOptionPane.PLAIN_MESSAGE);
 							i = n.getDialogue().size(); //make sure the thing ends
 						}
 					} else { //now we check for an answer
@@ -614,7 +621,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 							clipMusic.stop();
 							try {
 								AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-								Clip getItem = AudioSystem.getClip();
+								getItem = AudioSystem.getClip();
 								getItem.open(inputStream);
 								getItem.start();
 							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
@@ -622,21 +629,22 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 							}
 							switch (answer) {
 								case "diglett ":
-									player.addPokemon(new RockPokemon(currentLocation, "Diglett"));
+									player.addPokemon(new Pokemon(currentLocation, 3, "Diglett"));
 									JOptionPane.showMessageDialog(null, "You got a Diglett!"); //get a rid of irregular space
 									JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
 									break;
 								case "litwick ":
-									player.addPokemon(new FirePokemon(currentLocation, "Litwick"));
+									player.addPokemon(new Pokemon(currentLocation, 0, "Litwick"));
 									JOptionPane.showMessageDialog(null, "You got a Litwick!"); //get a rid of irregular space
 									JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
 									break;
 								case "magikarp ":
-									player.addPokemon(new WaterPokemon(currentLocation, "Magikarp"));
+									player.addPokemon(new Pokemon(currentLocation, 2, "Magikarp"));
 									JOptionPane.showMessageDialog(null, "You got a Magikarp!"); //get a rid of irregular space
 									JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
 									break;
 							}
+							getItem.stop();
 							clipMusic.setMicrosecondPosition(clipTimePosition);
 							clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 						}
@@ -658,19 +666,23 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 					String itemName = n.getItem().getName();
 					if(n.getAmountOfItems() > 1)
 						itemName = n.getItem() + "s";
+					String amount = Integer.toString(n.getAmountOfItems());
+					if(amount.equals("1"))
+						amount = "a";
 					player.addInventory(n.getItem());
 					clipTimePosition = clipMusic.getMicrosecondPosition();
 					clipMusic.stop();
 					try {
 						AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-						Clip getItem = AudioSystem.getClip();
+						getItem = AudioSystem.getClip();
 						getItem.open(inputStream);
 						getItem.start();
 					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 						e.printStackTrace();
 					}
-					JOptionPane.showMessageDialog(null, "You got " + n.getAmountOfItems() + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "You got " + amount + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
 					JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", name, JOptionPane.INFORMATION_MESSAGE);
+					getItem.stop();
 					clipMusic.setMicrosecondPosition(clipTimePosition);
 					clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 				}
@@ -698,14 +710,14 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			if (player.getPokemon().size() > 5) {
 				PokemonNames = new String[player.getPokemon().size()];
 				for (int i = 0; i < 6; i++) {
-					player.getPokemon().get(i).reset();
-					PokemonNames[i] = player.getPokemon().get(i).getName();
+					player.getPokemon(i).reset();
+					PokemonNames[i] = player.getPokemon(i).getName();
 				}
 			} else {
 				PokemonNames = new String[player.getPokemon().size()];
 				for (int i = 0; i < player.getPokemon().size(); i++) {
-					player.getPokemon().get(i).reset();
-					PokemonNames[i] = player.getPokemon().get(i).getName();
+					player.getPokemon(i).reset();
+					PokemonNames[i] = player.getPokemon(i).getName();
 				}
 			}
 			for (String n : PokemonNames) {
@@ -848,14 +860,14 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 										Height / currentBoard.length);
 								break;
 							case 7: //person interaction
-								ArrayList<String> dialogue = new ArrayList<String>();
+								ArrayList<String> dialogue = new ArrayList<>();
 								message = "";
 								while (!message.contains("<")) { //create the message
 									String next = reader.next();
 									message += next + " ";
 								}
 
-								while (message.indexOf(">") > -1) {
+								while (message.contains(">")) {
 									dialogue.add(message.substring(0, message.indexOf(">")));
 									message = message.substring(message.indexOf(">") + 2);
 								}
@@ -869,6 +881,21 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 										c * Height / currentBoard[0].length,
 										Width / currentBoard[0].length,
 										Height / currentBoard.length);
+								break;
+							case 15:
+								if(currentLocation.equals("K")) { //only k has a rocket door
+									currentBoard[i][c] = new Things(true,
+											i * Width / currentBoard.length,
+											c * Height / currentBoard[0].length,
+											Width / currentBoard[0].length,
+											Height / currentBoard.length);
+								} else {
+									currentBoard[i][c] = new Things(false,
+											i * Width / currentBoard.length,
+											c * Height / currentBoard[0].length,
+											Width / currentBoard[0].length,
+											Height / currentBoard.length);
+								}
 								break;
 							default:
 								currentBoard[i][c] = new Things(gridSpace,

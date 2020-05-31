@@ -37,7 +37,7 @@ public class HotBar extends JPanel implements ActionListener {
 		stats.addActionListener(this);
 		super.add(stats);
 		
-		loadout = new JButton("Change Pokemon Team");
+		loadout = new JButton("Change Team");
 		loadout.addActionListener(this);
 		super.add(loadout);
 	}
@@ -96,7 +96,7 @@ public class HotBar extends JPanel implements ActionListener {
 		stats.addActionListener(this);
 		super.add(stats);
 
-		loadout = new JButton("Change Pokemon Team");
+		loadout = new JButton("Change Team");
 		loadout.addActionListener(this);
 		super.add(loadout);
 
@@ -104,48 +104,40 @@ public class HotBar extends JPanel implements ActionListener {
 		panel.repaint();
 	}
 	public void actionPerformed(ActionEvent e) {
-		Pokemon[] pokemonList = getPokemonTeam();
-		String[] pokemonTeamNames = getPokemonTeamNames();
-		String[] movesName  = getMovesName();
-		String[] inventoryList = getInventory();
-		PokemonMove[] moves = getMoves();
-		String[] pokemonNames = getPokemonNames();
+		Pokemon[] pokemonList = null;
+		String[] pokemonNames = null, pokemonTeamNames = null, movesName = null, inventoryNameList = null;
+		PokemonMove[] moves = null;
+		Item[] inventoryList = null;
+		if(player.getPokemon().size() > 0) {
+			pokemonList = getPokemonTeam();
+			pokemonTeamNames = getPokemonTeamNames();
+			pokemonNames = getPokemonNames();
+			moves = player.getPokemon(0).getPokemonMoves();
+			movesName = getMovesName();
+
+		}
+		if(player.getInventory().length > 0) {
+			inventoryNameList = player.getInventoryNames();
+			inventoryList = player.getInventory();
+		}
 		JButton btn = (JButton) e.getSource();
 
 		if(!GuiMap.pokemonFight) { //only run when not fighting
 			if (btn == key) {
-				JOptionPane.showMessageDialog(null,
-						"Map:" +
-								"\nLight Green - Grass" +
-								"\nDark Green - Tall Grass" +
-								"\nLight Blue - Water" +
-								"\nlight Gray - Path" +
-								"\nGray - Wall" +
-								"\nDark Green - Tree" +
-								"\nOrange - Sign" +
-								"\nLight Brown - Chest" +
-								"\nDark Brown - Wood" +
-								"\nPurple - NPC" +
-								"\nDark Gray - Gravel",
-						"Key", JOptionPane.INFORMATION_MESSAGE);
+				showKey();
 			}
 			if (btn == stats) {
-				if (pokemonList.length != 0)
-					JOptionPane.showMessageDialog(null, "Name: " + player.getName() + "\nTrainer Type: " + player.getTrainerType() + "\nFavorite Pokemon: " + pokemonList[0] + "\nPokemon: " + pokemonList.length + "\nItems: " + inventoryList.length + "\nMoney: " + player.getPokemonDollar(), "Pokemon", JOptionPane.PLAIN_MESSAGE);
-				else
-					JOptionPane.showMessageDialog(null, "Name: " + player.getName() + "\nTrainer Type: " + player.getTrainerType() + "\nFavorite Pokemon: None\nPokemon: " + pokemonList.length + "\nItems: " + inventoryList.length + "\nMoney: " + player.getPokemonDollar(), "Pokemon", JOptionPane.PLAIN_MESSAGE);
+				showStats(pokemonList, inventoryList);
 			}
-
 			if (btn == pokemon) {
 				inspectPokemon(pokemonList, pokemonNames);
 			}
 			if (btn == inventory) {
-				useInventory(inventoryList, pokemonList);
+				useInventory(inventoryNameList, pokemonList);
 			}
 			if (btn == loadout) {
 				switchPokemonTeam(pokemonTeamNames, pokemonList);
 			}
-			panel.requestFocus();
 		} else { //players turn
 			if(GuiMap.playerTurn) {
 				if (btn == pokemonAttack) {
@@ -155,7 +147,7 @@ public class HotBar extends JPanel implements ActionListener {
 					playerFlee();
 				}
 				if (btn == attackItems) {
-					useInventory(inventoryList, pokemonList);
+					useInventory(inventoryNameList, pokemonList);
 				}
 				if (btn == pokemonTeamAttack) {
 					switchPokemonTeam(pokemonTeamNames, pokemonList);
@@ -166,10 +158,39 @@ public class HotBar extends JPanel implements ActionListener {
 		}
 		panel.requestFocus();
 	}
+	public void showKey() {
+		JOptionPane.showMessageDialog(null,
+				"Map:" +
+						"\nLight Green - Grass" +
+						"\nDark Green - Tall Grass" +
+						"\nLight Blue - Water" +
+						"\nlight Gray - Path" +
+						"\nGray - Wall" +
+						"\nDark Green - Tree" +
+						"\nOrange - Sign" +
+						"\nLight Brown - Chest" +
+						"\nDark Brown - Wood" +
+						"\nPurple - NPC" +
+						"\nDark Gray - Gravel",
+				"Key", JOptionPane.INFORMATION_MESSAGE);
+	}
+	public void showStats(Pokemon[] pokemonList, Item[] inventoryList) {
+		String show = "Name: " + player.getName() + "\nTrainer Type: " + player.getTrainerType() + "\nFavorite Pokemon: ";
+		if (pokemonList != null)
+			show += pokemonList[0].getName() + "\nPokemon: " + pokemonList.length + "\nItems: ";
+		else
+			show += "None\nPokemon: " + player.getPokemon().size() + "\nItems: ";
+		if(inventoryList != null)
+			show += inventoryList.length + "\nMoney: " + player.getPokemonDollar();
+		else
+			show += "0\nMoney: " + player.getPokemonDollar();
+		JOptionPane.showMessageDialog(null, show, "Pokemon", JOptionPane.PLAIN_MESSAGE);
+
+	}
 	public void inspectPokemon(Pokemon[] pokemonList, String[] pokemonNames) {
-		if (pokemonList.length == 0) {
+		if (pokemonList == null)
 			JOptionPane.showMessageDialog(null, "You don't have any pokemon", "Pokemon", JOptionPane.ERROR_MESSAGE);
-		} else {
+		else {
 			String pokemon = (String) JOptionPane.showInputDialog(null,
 					"Select a Pokemon:",
 					"Pokemon",
@@ -188,7 +209,7 @@ public class HotBar extends JPanel implements ActionListener {
 			}
 			String moves = "";
 			for (int m = 0; m < 4; m++) { //4 moves per pokemon
-				moves += pokemonList[pokemonLocation].getAttack(m) + "| Damage: " + pokemonList[pokemonLocation].getAttack(m).getMax() + " - " + pokemonList[pokemonLocation].getAttack(m).getMin() + " Move Point: " + pokemonList[pokemonLocation].getAttack(m).getCurrentMovePoint() + "/" + pokemonList[pokemonLocation].getAttack(m).getMovePoint() + "\n";
+				moves += pokemonList[pokemonLocation].getAttack(m) + "|Damage: " + pokemonList[pokemonLocation].getAttack(m).getMax() + " - " + pokemonList[pokemonLocation].getAttack(m).getMin() + " Move Point: " + pokemonList[pokemonLocation].getAttack(m).getCurrentMovePoint() + "/" + pokemonList[pokemonLocation].getAttack(m).getMovePoint() + "\n";
 			}
 			JOptionPane.showMessageDialog(null,
 					pokemonList[pokemonLocation].getName() +
@@ -210,7 +231,6 @@ public class HotBar extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(null, "You fled successfully!", "Flee", JOptionPane.INFORMATION_MESSAGE);
 				GuiMap.pokemonFight = false;
 				panel.requestFocus();
-				return;
 			} else {
 				JOptionPane.showMessageDialog(null, "You were unable to flee!", "Flee", JOptionPane.INFORMATION_MESSAGE);
 				GuiMap.playerTurn = false;
@@ -276,201 +296,206 @@ public class HotBar extends JPanel implements ActionListener {
 			}
 			GuiMap.playerTurn = false;
 		} else {
-			JOptionPane.showMessageDialog(null, "You have no more move points for " + moves[moveLocation], "Inventory", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "You have no more move points for " + moves[moveLocation], player.getPokemon(0).getName(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	public void switchPokemonTeam(String[] pokemonTeamNames, Pokemon[] pokemonList) {
-		String pokemonSwitch1 = (String) JOptionPane.showInputDialog(null,
-				"Select a Pokemon to switch:",
-				"Team",
-				JOptionPane.PLAIN_MESSAGE,
-				null,
-				pokemonTeamNames,
-				pokemonTeamNames[0]);
-		if (pokemonSwitch1 == null || (("".equals(pokemonSwitch1)))) { //nothing is inputted
-			panel.requestFocus();
-			return;
-		}
-		int pokemonLocation1 = -1;
-		for (int k = 0; k < pokemonTeamNames.length; k++) {
-			if (pokemonTeamNames[k].equals(pokemonSwitch1))
-				pokemonLocation1 = k;
-		}
-		String pokemonSwitch2;
-		int pokemonLocation2;
-		if(GuiMap.pokemonFight) {
-			pokemonSwitch2 = (String) JOptionPane.showInputDialog(null,
-					"Select another Pokemon to switch:",
+		if (pokemonList.length == 0)
+			JOptionPane.showMessageDialog(null, "You don't have any pokemon", "Pokemon", JOptionPane.INFORMATION_MESSAGE);
+		else {
+			String pokemonSwitch1 = (String) JOptionPane.showInputDialog(null,
+					"Select a Pokemon to switch:",
 					"Team",
 					JOptionPane.PLAIN_MESSAGE,
 					null,
 					pokemonTeamNames,
 					pokemonTeamNames[0]);
-			if (pokemonSwitch2 == null || (("".equals(pokemonSwitch2)))) { //nothing is inputted
+			if (pokemonSwitch1 == null || (("".equals(pokemonSwitch1)))) { //nothing is inputted
 				panel.requestFocus();
 				return;
 			}
-			pokemonLocation2 = -1;
+			int pokemonLocation1 = -1;
 			for (int k = 0; k < pokemonTeamNames.length; k++) {
-				if (pokemonTeamNames[k].equals(pokemonSwitch2))
-					pokemonLocation2 = k;
+				if (pokemonTeamNames[k].equals(pokemonSwitch1))
+					pokemonLocation1 = k;
 			}
-		} else { //you can switch with entire team
-			pokemonSwitch2 = (String) JOptionPane.showInputDialog(null,
-					"Select another Pokemon to switch:",
-					"Team",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					getPokemonNames(),
-					pokemonTeamNames[0]);
-			if (pokemonSwitch2 == null || (("".equals(pokemonSwitch2)))) { //nothing is inputted
-				panel.requestFocus();
-				return;
+			String pokemonSwitch2;
+			int pokemonLocation2;
+			if (GuiMap.pokemonFight) {
+				pokemonSwitch2 = (String) JOptionPane.showInputDialog(null,
+						"Select another Pokemon to switch:",
+						"Team",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						pokemonTeamNames,
+						pokemonTeamNames[0]);
+				if (pokemonSwitch2 == null || (("".equals(pokemonSwitch2)))) { //nothing is inputted
+					panel.requestFocus();
+					return;
+				}
+				pokemonLocation2 = -1;
+				for (int k = 0; k < pokemonTeamNames.length; k++) {
+					if (pokemonTeamNames[k].equals(pokemonSwitch2))
+						pokemonLocation2 = k;
+				}
+			} else { //you can switch with entire team
+				pokemonSwitch2 = (String) JOptionPane.showInputDialog(null,
+						"Select another Pokemon to switch:",
+						"Team",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						getPokemonNames(),
+						pokemonTeamNames[0]);
+				if (pokemonSwitch2 == null || (("".equals(pokemonSwitch2)))) { //nothing is inputted
+					panel.requestFocus();
+					return;
+				}
+				pokemonLocation2 = -1;
+				for (int k = 0; k < getPokemonNames().length; k++) {
+					if (getPokemonNames()[k].equals(pokemonSwitch2))
+						pokemonLocation2 = k;
+				}
 			}
-			pokemonLocation2 = -1;
-			for (int k = 0; k < getPokemonNames().length; k++) {
-				if (getPokemonNames()[k].equals(pokemonSwitch2))
-					pokemonLocation2 = k;
-			}
+			player.switchPokemon(pokemonList[pokemonLocation1], pokemonList[pokemonLocation2]);
+			if (GuiMap.pokemonFight)
+				JOptionPane.showMessageDialog(null, "I choose you, " + player.getPokemon().get(pokemonLocation2).getName() + "!", "Team", JOptionPane.INFORMATION_MESSAGE);
+			else
+				JOptionPane.showMessageDialog(null, player.getPokemon().get(pokemonLocation2).getName() + " has been swapped with " + player.getPokemon().get(pokemonLocation1).getName(), "Team", JOptionPane.INFORMATION_MESSAGE);
 		}
-		player.switchPokemon(pokemonList[pokemonLocation1], pokemonList[pokemonLocation2]);
-		if(GuiMap.pokemonFight)
-			JOptionPane.showMessageDialog(null, "I choose you, " + player.getPokemon().get(pokemonLocation2).getName() + "!" + player.getPokemon().get(0).getName(), "Team", JOptionPane.INFORMATION_MESSAGE);
-		else
-			JOptionPane.showMessageDialog(null, player.getPokemon().get(pokemonLocation2).getName() + " has been swapped with " + player.getPokemon().get(pokemonLocation1).getName(), "Team", JOptionPane.INFORMATION_MESSAGE);
 	}
-	public void useInventory(String[] inventoryList, Pokemon[] pokemonList) {
-		if (inventoryList.length == 0)
+	public void useInventory(String[] inventoryNameList, Pokemon[] pokemonList) {
+		if (inventoryNameList == null)
 			JOptionPane.showMessageDialog(null, "You have no items in your backpack", "Inventory", JOptionPane.ERROR_MESSAGE);
 		else {
+			for(int i = 0; i < inventoryNameList.length; i++) {
+				if(player.getInventory(i, false).getAmount() > 1)
+					inventoryNameList[i] = player.getInventory(i, false).getAmount() + " " + inventoryNameList[i] + "s"; //multiple or not
+				else
+					inventoryNameList[i] = inventoryNameList[i];
+			}
 			String item = (String) JOptionPane.showInputDialog(null,
 					"Select item do you want to use:",
 					"Inventory",
 					JOptionPane.PLAIN_MESSAGE,
 					null,
-					inventoryList,
-					inventoryList[0]);
+					inventoryNameList,
+					inventoryNameList[0]);
+
 			if (item == null || (("".equals(item)))) { //nothing is inputted
 				panel.requestFocus();
 				return;
 			}
 			int inventoryLocation = -1;
-			for (int k = 0; k < inventoryList.length; k++) {
-				if (inventoryList[k].equals(item))
+			for (int k = 0; k < inventoryNameList.length; k++) {
+				if (inventoryNameList[k].equals(item)) {
 					inventoryLocation = k;
+				}
 			}
-			if (inventoryLocation == -1) { //shouldn't be
-				panel.requestFocus();
+			if(player.getInventory(inventoryLocation, false) instanceof Bike) {
+				if (!GuiMap.pokemonFight) {
+					if (!player.getIsOnBike() || !player.getIsOnSuperBike()) {
+						int answer = JOptionPane.showConfirmDialog(null,
+								"Do you want to equip the " + player.getInventory(inventoryLocation, false).getName() + "?",
+								"Inventory",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+						if (answer == JOptionPane.YES_OPTION) {
+							((Bike) player.getInventory(inventoryLocation, false)).setBike(true, player);
+							JOptionPane.showMessageDialog(null, "You equipped the " + player.getInventory(inventoryLocation, false).getName());
+						}
+					} else {
+						int answer = JOptionPane.showConfirmDialog(null,
+								"Do you want to unequip the " + player.getInventory(inventoryLocation, false).getName() + "?",
+								"Inventory",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+						if (answer == JOptionPane.YES_OPTION) {
+							((Bike) player.getInventory(inventoryLocation, false)).setBike(false, player);
+							JOptionPane.showMessageDialog(null, "You unequipped the " + player.getInventory(inventoryLocation, false).getName());
+						}
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
+				}
+				return;
+			} else if (player.getInventory(inventoryLocation, false) instanceof Badge) {
+				if(GuiMap.pokemonFight)
+					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
+				else
+					JOptionPane.showMessageDialog(null, player.getInventory(inventoryLocation, false).getDescription(), "Inventory", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			if(player.getInventory(inventoryLocation, false) instanceof HealItem) {
-				String pokemon;
-				if(GuiMap.pokemonFight) { //only get pokemon team
-					pokemon = (String) JOptionPane.showInputDialog(null,
-							"Which Pokemon do you want to use the " + item + " on:",
-							"Pokemon",
-							JOptionPane.QUESTION_MESSAGE,
-							null,
-							getPokemonTeamNames(),
-							getPokemonTeamNames()[0]);
-				} else { //get all pokemon
-					pokemon = (String) JOptionPane.showInputDialog(null,
-							"Which Pokemon do you want to use the " + item + " on:",
-							"Pokemon",
-							JOptionPane.QUESTION_MESSAGE,
-							null,
-							getPokemonNames(),
-							getPokemonNames());
-				}
-				if (pokemon == null || (("".equals(pokemon)))) { //nothing is inputted
-					panel.requestFocus();
-					return;
-				}
-				int pokemonLocation = -1;
-				for (int k = 0; k < pokemonList.length; k++) {
-					if (pokemonList[k].getName().equals(pokemon))
-						pokemonLocation = k;
-				}
-				player.getPokemon().get(pokemonLocation).heal(((HealItem) (player.getInventory(inventoryLocation, true))).getHeal()); //is a healing item
-				player.getInventory().remove(inventoryLocation); //the item has been used
-				JOptionPane.showMessageDialog(null, player.getPokemon().get(pokemonLocation).getName() + " has been healed to " + player.getPokemon().get(pokemonLocation).getHealth() + " hp", "Healed", JOptionPane.INFORMATION_MESSAGE);
-			} else if(GuiMap.pokemonFight) {
-				if (player.getInventory(inventoryLocation, false) instanceof Bike) {
-					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
-					return;
-				} else if (player.getInventory(inventoryLocation, false) instanceof Badge) {
-					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				if (player.getInventory(inventoryLocation, true) instanceof Pokeball && !playerFight) {
-					JOptionPane.showMessageDialog(null, "You used a Pokeball on " + opponentPokemon.getName() + "!", "Catching", JOptionPane.INFORMATION_MESSAGE);
-					catchPokemon();
-					if (caught) {
-						player.addPokemon(opponentPokemon);
-						JOptionPane.showMessageDialog(null, "You caught " + opponentPokemon.getName() + "!", "Catching", JOptionPane.INFORMATION_MESSAGE);
-						JOptionPane.showMessageDialog(null, "[Check your Pokedex for more information]", "Catching", JOptionPane.INFORMATION_MESSAGE);
-						GuiMap.pokemonFight = false;
+			int answer = JOptionPane.showConfirmDialog(null,
+					"Are you sure you want to use " +
+					"\n" + player.getInventory(inventoryLocation, false).getName() + "?" +
+					"\n" + player.getInventory(inventoryLocation, false).getDescription(),
+					"Inventory",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+			if(answer == JOptionPane.YES_OPTION) {
+				if (player.getInventory(inventoryLocation, false) instanceof HealItem) {
+					String pokemon;
+					if (GuiMap.pokemonFight) { //only get pokemon team
+						pokemon = (String) JOptionPane.showInputDialog(null,
+								"Which Pokemon do you want to use the " + item + " on:",
+								"Pokemon",
+								JOptionPane.QUESTION_MESSAGE,
+								null,
+								getPokemonTeamNames(),
+								getPokemonTeamNames()[0]);
+					} else { //get all pokemon
+						pokemon = (String) JOptionPane.showInputDialog(null,
+								"Which Pokemon do you want to use the " + item + " on:",
+								"Pokemon",
+								JOptionPane.QUESTION_MESSAGE,
+								null,
+								getPokemonNames(),
+								getPokemonNames());
+					}
+					if (pokemon == null || (("".equals(pokemon)))) { //nothing is inputted
 						panel.requestFocus();
 						return;
-					} else {
-						JOptionPane.showMessageDialog(null, "The " + opponentPokemon.getName() + " was not caught.", "Catching", JOptionPane.ERROR_MESSAGE);
-						GuiMap.playerTurn = false;
 					}
-					return;
-				} else if (player.getInventory(inventoryLocation, false) instanceof Pokeball && playerFight) {
-					JOptionPane.showMessageDialog(null, "You cannot catch already caught Pokemon!", "Inventory", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			} else {
-				if(player.getInventory(inventoryLocation, false) instanceof Bike) {
-					if(!player.getIsOnBike()) {
-						int answer = JOptionPane.showConfirmDialog(null,
-								"Do you want to equip the Bike?",
-								"Inventory",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE);
-						if (answer == JOptionPane.YES_OPTION) {
-							((Bike) player.getInventory(inventoryLocation, false)).setBike(true);
-							JOptionPane.showMessageDialog(null, "You equipped the Bike");
-						}
-					} else {
-						int answer = JOptionPane.showConfirmDialog(null,
-								"Do you want to unequip the Bike?",
-								"Inventory",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE);
-						if (answer == JOptionPane.YES_OPTION) {
-							((Bike) player.getInventory(inventoryLocation, false)).setBike(false);
-							JOptionPane.showMessageDialog(null, "You unequipped the Bike");
-						}
+					int pokemonLocation = -1;
+					for (int k = 0; k < pokemonList.length; k++) {
+						if (pokemonList[k].getName().equals(pokemon))
+							pokemonLocation = k;
 					}
-				} else { //it's not a bike and heal
-					JOptionPane.showMessageDialog(null, player.getInventory(inventoryLocation, false).getDescription(), "Inventory", JOptionPane.INFORMATION_MESSAGE);
+					player.getPokemon(pokemonLocation).heal(((HealItem) (player.getInventory(inventoryLocation, true))).getHeal()); //is a healing item
+					JOptionPane.showMessageDialog(null, player.getPokemon().get(pokemonLocation).getName() + " has been healed to " + player.getPokemon().get(pokemonLocation).getHealth() + " hp", "Healed", JOptionPane.INFORMATION_MESSAGE);
+				} else if (player.getInventory(inventoryLocation, false) instanceof Pokeball) {
+					if (!playerFight && GuiMap.pokemonFight) {
+						JOptionPane.showMessageDialog(null, "You used a Pokeball on " + opponentPokemon.getName() + "!", "Catching", JOptionPane.INFORMATION_MESSAGE);
+						catchPokemon(opponentPokemon.getHealth(), opponentPokemon.getMaxHealth());
+						if (caught) {
+							player.addPokemon(opponentPokemon);
+							JOptionPane.showMessageDialog(null, "You caught " + opponentPokemon.getName() + "!", "Catching", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(null, "[Check your Pokedex for more information]", "Catching", JOptionPane.INFORMATION_MESSAGE);
+							GuiMap.pokemonFight = false;
+						} else {
+							JOptionPane.showMessageDialog(null, "The " + opponentPokemon.getName() + " was not caught.", "Catching", JOptionPane.ERROR_MESSAGE);
+							GuiMap.playerTurn = false;
+						}
+						player.getInventory(inventoryLocation, true); //used a ball
+					} else if (playerFight && GuiMap.pokemonFight) {
+						JOptionPane.showMessageDialog(null, "You cannot catch already caught Pokemon!", "Inventory", JOptionPane.ERROR_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "You cannot use that now!", "Inventory", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		}
 	}
-	public void catchPokemon() {
-		int random = (int) (Math.random() * 4); //2/3ds catch chance
+	public void catchPokemon(int health, int maxHealth) {
+		int random;
+		if(maxHealth / 2 > health)
+			random = (int) (Math.random() * 4); //higher catch chance
+		else
+			random = (int) (Math.random() * 5);
 		if(random != 3)
 			caught = true;
 		else
 			caught = false;
-	}
-	public String[] updateTeam() {
-		String[] names;
-		if(player.getPokemon().size() > 5) { //this is a full team
-			names = new String[6];
-			for (int i = 0; i < 6; i++) {
-				names[i] = player.getPokemon().get(i).getName();
-			}
-		} else {
-			names = new String[player.getPokemon().size()];
-			for (int i = 0; i < player.getPokemon().size(); i++) {
-				names[i] = player.getPokemon().get(i).getName();
-			}
-		}
-		return names;
 	}
 	public void checkFight() {
 		if(player.getPokemon().get(0).hasFainted() && player.hasPokemon()) {
@@ -502,7 +527,6 @@ public class HotBar extends JPanel implements ActionListener {
 			GuiMap.clipFight.stop();
 			GuiMap.clipMusic.setMicrosecondPosition(GuiMap.clipTimePosition);
 			GuiMap.clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-			reset();
 		}
 		panel.requestFocus();
 	}
@@ -518,27 +542,20 @@ public class HotBar extends JPanel implements ActionListener {
 		if (player.getPokemon().size() > 5) {
 			pokemonList = new Pokemon[6];
 			for (int i = 0; i < 6; i++) {
-				pokemonList[i] = player.getPokemon().get(i);
+				pokemonList[i] = player.getPokemon(i);
 			}
 		} else {
 			pokemonList = new Pokemon[player.getPokemon().size()];
 			for (int i = 0; i < player.getPokemon().size(); i++) {
-				pokemonList[i] = player.getPokemon().get(i);
+				pokemonList[i] = player.getPokemon(i);
 			}
 		}
 		return pokemonList;
 	}
-	public String[] getInventory() {
-		String[] list = new String[player.getInventory().size()]; //creating multiple buttons
-		for (int i = 0; i < player.getInventory().size(); i++) {
-			list[i] = player.getInventory().get(i).getName();
-		}
-		return list;
-	}
 	public String[] getMovesName() {
 		String[] moves = new String[4];
 		for(int i = 0; i < 4; i++) {
-			moves[i] = getPokemon()[0].getPokemonMoves(i).getName();
+			moves[i] = player.getPokemon(0).getPokemonMoves(i).getName();
 		}
 		return moves;
 	}
@@ -552,14 +569,14 @@ public class HotBar extends JPanel implements ActionListener {
 	public Pokemon[] getPokemon() {
 		Pokemon[] pokemon = new Pokemon[player.getPokemon().size()];
 		for (int i = 0; i < player.getPokemon().size(); i++) {
-			pokemon[i] = player.getPokemon().get(i);
+			pokemon[i] = player.getPokemon(i);
 		}
 		return pokemon;
 	}
 	public String[] getPokemonNames() {
 		String[] names = new String[player.getPokemon().size()];
 		for (int i = 0; i < player.getPokemon().size(); i++) {
-			names[i] = player.getPokemon().get(i).getName();
+			names[i] = player.getPokemon(i).getName();
 		}
 		return names;
 	}
