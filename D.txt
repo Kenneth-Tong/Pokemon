@@ -8,13 +8,13 @@
 5 5 5 5 5 5 1 5 0 5 0 5 5 5 5 1 5 5 5 5
 1 1 0 1 0 1 1 1 0 5 0 0 1 12 Berry Juice> 5 1 1 1 1 1
 1 5 5 0 5 5 5 1 5 5 5 5 1 5 5 5 1 5 7 Team Rocket Goon#> Turtwig1> Haha, you fell right for my trap!|> The leader says if I stop trainers like you I would get a legendary Pokemon|> So lets fight!#> Wow, I can't believe I lost. What should I even say to the leader now?>< 1
-0 0 5 1 5 1 1 0 1 5 1 5 1 1 1 0 1 5 1 1
-0 5 5 1 5 1 5 5 5 5 1 5 5 5 5 1 5 5 1 5
-1 5 7 Dr. Frank> Careful traveler, I almost lost sight of the path.>< 1 0 1 5 1 0 0 1 5 1 1 1 1 5 1 1 1
+0 0 5 1 5 1 1 0 1 5 1 5 1 1 1 0 1 5 0 1
+0 5 5 1 5 1 5 5 5 5 1 5 5 5 5 1 5 5 0 5
+1 5 7 Dr. Frank> Careful traveler, I almost lost sight of the path.>< 1 0 1 5 1 0 0 1 5 1 1 0 0 5 1 1 0
 1 5 5 5 5 5 5 0 5 0 0 5 5 5 5 5 5 5 1 5
-1 1 5 0 0 0 5 1 5 5 1 5 1 5 1 0 1 5 1 5
-5 0 5 0 5 0 0 0 5 1 1 0 1 5 7 Ryan;> Cherry> These trees are really annoying!|> I lost my map, but I'm sure I'm close to the right path...|> It's nice to have a pokemon for the company, my Pikachu picked some cherries along the way|> Have one! They're pretty sweet> I swear I know where I'm going.>< 5 1 1 1 5
+1 1 5 0 0 0 5 1 5 5 1 5 1 5 1 0 0 5 1 5
+5 0 5 0 5 0 0 0 5 1 1 0 1 5 7 Ryan;> Cherry> These trees are really annoying!|> I lost my map, but I'm sure I'm close to the right path...|> It's nice to have a pokemon for the company, my Pikachu picked some cherries along the way|> Have one! They're pretty sweet> I swear I know where I'm going.>< 5 0 0 0 5
 0 0 5 0 5 5 0 5 5 0 5 5 1 5 5 5 5 5 5 5
-1 5 5 1 5 1 1 0 1 0 1 5 1 1 1 5 1 6 Sand Castle Beach> 1 0
-1 1 1 0 5 1 5 5 5 5 5 5 5 5 1 5 1 5 1 K
+1 5 5 1 5 1 1 0 1 0 1 5 0 0 0 5 0 6 Sand Castle Beach> 1 0
+1 1 1 0 5 1 5 5 5 5 5 5 5 5 1 5 0 5 1 K
 5 5 5 12 Key> 5 1 0 0 0 1 0 1 1 5 1 1 1 5 5 5

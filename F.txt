@@ -1,0 +1,20 @@
+10 10 10 10 10 10 10 10 10 10 10 10 10 10 G 10 10 10 10 10
+10 0 0 0 10 M 10 0 0 0 10 8 4 4 4 4 4 4 8 10
+10 0 5 0 6 Elevetor> 4 4 0 5 0 10 8 4 4 4 4 4 4 8 10
+10 0 0 0 4 4 4 0 0 0 10 8 4 4 4 4 4 4 7 Barry> They said the wait was an hour at most to get a room But I've been waiting for a while.>> 10
+10 0 5 0 4 4 4 0 5 0 10 8 4 4 4 4 4 4 8 10
+10 0 0 0 4 4 4 0 0 0 10 10 4 4 4 4 4 4 10 10
+10 0 5 0 4 4 4 0 5 0 10 4 4 4 4 4 4 4 4 10
+10 0 0 0 4 4 4 0 0 0 10 4 4 4 4 4 4 4 4 10
+10 0 5 0 4 4 4 0 5 0 10 4 10 10 10 4 4 4 4 10
+10 0 0 0 4 4 4 0 0 0 10 4 4 7 Annie!> Welcome to Trivago, I'm Annie.|> Unfortunately we are booked for the night, but feel free to stick around.>< 10 4 4 4 4 10
+10 0 5 0 4 4 4 0 5 0 10 4 4 4 10 4 4 4 4 10
+10 0 0 0 4 4 4 0 0 0 10 4 4 12 Soda> 10 4 4 4 4 10
+10 10 10 10 4 4 4 10 10 10 10 10 10 10 4 4 10 10 10 10
+10 4 4 4 4 4 4 4 4 4 4 4 4 10 4 4 4 4 8 10
+10 4 4 6 Gift Shop> 4 4 4 4 4 4 4 4 4 10 7 Uther!> This hotel is a bit small, wish I'd choosen a bigger one.|> 4 4 4 8 10
+10 4 4 10 10 10 10 10 10 10 10 4 4 10 4 4 4 4 8 10
+10 4 4 10 13 13 13 13 13 13 10 4 4 10 4 4 4 4 8 10
+10 4 4 6 Snacks> 4 4 4 4 4 4 10 4 4 4 4 4 4 4 8 10
+10 4 4 4 4 4 4 4 7 Diana~> Hey there, what are you looking to buy?|> We have some items that you and your pokemon might like: 5 Fruit Cup 10, Orange Guice, Soda, Berrie, Cookie, Egg and Cheese Sandwich~> Thanks for shopping~>< 8 10 4 4 4 4 4 4 4 8 10
+10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10

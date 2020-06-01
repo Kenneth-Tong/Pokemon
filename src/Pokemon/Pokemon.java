@@ -155,24 +155,24 @@ public class Pokemon {
 				attackList = new ArrayList<>(Arrays.asList("Roll Out", "Head Smash", "Earthquake", "Sand storm", "Dig", "Fissure", "Magnitude", "Mud Bomb", "Bone Rush", "Spikes", "Sand Tomb", "Sand Attack"));
 				break;
 		}
-		int randomHeal = (int) (Math.random() * 9);
-		ArrayList<String> heaList = new ArrayList<>(Arrays.asList("Revitalize", "Gather", "Rain Dance", "Rest"));
+		ArrayList<String> healList = new ArrayList<>(Arrays.asList("Wish", "Moonlight", "Recovery", "Synthesis", "Rest"));
+		int randomHeal = (int) (Math.random() * 12);
 		switch(randomHeal) {
 			case 1:
-				attackList.add(heaList.get(1));
-				attackList.add(heaList.get(0));
+				attackList.add(healList.get(0));
+				attackList.add(healList.get(1));
 				break;
 			case 2:
-				attackList.add(heaList.get(2));
-				attackList.add(heaList.get(1));
+				attackList.add(healList.get(2));
+				attackList.add(healList.get(3));
 				break;
 			case 3:
-				attackList.add(heaList.get(3));
-				attackList.add(heaList.get(1));
+				attackList.add(healList.get(4));
+				attackList.add(healList.get(0));
 				break;
 			case 4:
-				attackList.add(heaList.get(0));
-				attackList.add(heaList.get(2));
+				attackList.add(healList.get(1));
+				attackList.add(healList.get(2));
 				break;
 			default:
 				hasHealingMove = false;

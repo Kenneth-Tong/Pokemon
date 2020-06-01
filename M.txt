@@ -1,0 +1,20 @@
+10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
+10 8 8 8 10 F 10 4 4 4 4 10 13 13 4 10 8 8 8 10
+10 7 Grady!> I lost my Mareep around here somewhere.|> Let me know if you see her around the second floor!>< 4 4 6 Elevator> 4 4 4 110 110 4 10 8 8 4 10 4 4 8 10
+10 4 4 4 4 4 4 4 110 110 4 10 8 8 4 10 7 Tim> My room isn't very organized, maybe I should put stuff up sometime>< 4 10 10
+10 10 10 10 10 10 10 4 110 110 4 10 8 8 4 4 4 4 4 10
+10 4 4 4 4 4 4 4 110 110 4 10 4 4 4 4 4 4 4 10
+10 10 10 10 10 10 10 4 110 110 4 10 10 10 10 10 10 4 10 10
+10 3 3 3 3 7 Trainer Ashley!> Don't go in! The water is freezing!|> I should ask the hotel if there's a heater somewhere...>< 10 4 110 110 4 4 4 4 4 4 4 4 6 Room 1> 10
+10 3 3 3 3 4 10 4 110 110 4 4 4 4 4 4 4 4 6 Room 2> 10
+10 3 3 3 3 4 4 10 110 110 4 10 10 10 10 10 10 4 10 10
+10 3 3 3 3 4 10 6 Pool> 110 110 4 10 8 8 8 8 10 4 4 10
+10 10 10 10 10 10 10 4 110 110 4 10 9 9 9 9 10 4 4 10
+10 13 13 4 12 Hard Candy>  10 4 110 110 4 10 9 7 Cindy!> These rugs are really dull for me...|> Maybe a nice color would be nicer.>< 9 9 4 4 4 10
+10 8 8 4 4 4 10 4 110 110 4 10 9 9 9 9 4 4 4 10
+10 8 8 4 4 4 10 4 110 110 4 10 10 10 10 10 10 10 10 10
+10 4 4 4 4 4 10 4 110 110 4 10 7 Trainer Nate;> Key> Well, I found a cool key in a cabinet, but it doesn't look like a hotel key|> Maybe you could make use of this instead.>< 4 4 4 4 4 4 10
+10 4 4 4 4 4 10 6 Room 4> 110 110 6 10 8 8 4 4 8 8 4 10
+10 9 9 4 4 4 10 4 110 110 4 10 10 10 4 10 8 8 12 Pumpkin Pie> 10
+10 9 9 4 4 4 4 4 4 4 4 4 4 4 4 10 13 13 10
+10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10

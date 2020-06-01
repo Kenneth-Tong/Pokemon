@@ -171,7 +171,8 @@ public class HotBar extends JPanel implements ActionListener {
 						"\nLight Brown - Chest" +
 						"\nDark Brown - Wood" +
 						"\nPurple - NPC" +
-						"\nDark Gray - Gravel",
+						"\nDark Gray - Gravel" +
+						"\nRed - Chair",
 				"Key", JOptionPane.INFORMATION_MESSAGE);
 	}
 	public void showStats(Pokemon[] pokemonList, Item[] inventoryList) {

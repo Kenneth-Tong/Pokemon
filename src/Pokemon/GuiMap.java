@@ -745,102 +745,17 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		}
 		public void setBoard (String location){
 			Scanner reader = null;
-			switch (location) {
-				case "A":
-					reader = readText("A", reader);
-					switch (currentLocation) {
-						case "B":
-							player.setLocation(68, 188);
-							break;
-
-						case "C":
-							player.setLocation(157, 578);
-							break;
-					}
-					break;
-				case "B":
-					reader = readText("B", reader);
-					player.setLocation(8, 278);
-					break;
-				case "C":
-					if (player.getPokemon().size() == 0) {
-						JOptionPane.showMessageDialog(null, "You should get a Pokemon first from the Poke-center"); //get a rid of irregular space
-						return;
-					}
-					reader = readText("C", reader);
-
-					switch (currentLocation) {
-						case "A":
-							player.setLocation(157, 6);
-							break;
-						case "E":
-							player.setLocation(164, 100);
-							break;
-						case "D":
-							player.setLocation(577, 246);
-							break;
-
-						case "G":
-							player.setLocation(403, 585);
-							break;
-					}
-					break;
-				case "D":
-					reader = readText("D", reader);
-
-					switch (currentLocation) {
-						case "H":
-							player.setLocation(98, 188);
-							break;
-
-						case "C":
-							player.setLocation(7, 246);
-							break;
-					}
-					break;
-				case "E":
-					reader = readText("E", reader);
-					player.setLocation(164, 563);
-					break;
-
-				case "G":
-					reader = readText("G", null);
-
-					switch (currentLocation) {
-						case "C":
-							player.setLocation(403, 15);
-							break;
-					}
-					break;
-				case "H":
-					reader = readText("h", reader);
-					switch (currentLocation) {
-						case "C":
-							player.setLocation(403, 15);
-							break;
-					}
-					break;
-				case "I":
-					reader = readText("I", reader);
-					break;
-				case "J":
-					reader = readText("J", reader);
-					break;
-				case "K":
-					reader = readText("K", reader);
-					break;
-				case "L":
-					reader = readText("B", reader);
-					break;
-			}
+			reader = readText(location, reader);
 			for (int i = 0; i < currentBoard.length; i++) { //draw board
 				for (int c = 0; c < currentBoard[0].length; c++) {
 					int gridSpace = -1;
 					String gridSpace2 = "";
 					try { //regular drawing, not a connection
 						gridSpace = reader.nextInt();
+						System.out.println(gridSpace);
 					} catch (Exception e) { //leads to another path
 						gridSpace2 = reader.next();
+						System.out.println(gridSpace2);
 					}
 					if (gridSpace > -1) { //Checking if the next is int or string
 						switch (gridSpace) {
@@ -883,7 +798,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 										Height / currentBoard.length);
 								break;
 							case 15:
-								if(currentLocation.equals("K")) { //only k has a rocket door
+								if(currentLocation.equals("K") || currentLocation.equals("H")) { //only k has a rocket door
 									currentBoard[i][c] = new Things(true,
 											i * Width / currentBoard.length,
 											c * Height / currentBoard[0].length,
@@ -906,6 +821,8 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								break;
 						}
 					} else {
+						if(currentLocation.equals(gridSpace2))
+							player.setLocation(i * Width / currentBoard.length + Width / (4 * currentBoard[0].length), c * Height / currentBoard[0].length + Width / (4 * currentBoard[0].length));
 						currentBoard[i][c] = new Things(gridSpace2,
 								i * Width / currentBoard.length,
 								c * Height / currentBoard[0].length,

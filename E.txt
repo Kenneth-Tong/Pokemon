@@ -1,16 +1,16 @@
 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
 2 12 Soda> 4 4 4 4 4 15 4 4 4 4 4 4 4 4 4 4 12 Hard Candy> 2
-2 4 4 4 4 4 4 2 4 4 4 4 4 4 4 5 5 5 4 2
-2 8 8 8 8 8 8 2 6 Lobby> 4 4 4 4 2 4 4 7 Trainer Ethan!> Hey there inspiring Pokemon Master, looking to buy Pokeballs?/> yes Great! I only have one item, but it's a great deal: 1 Pokeball~> Thanks for coming!>< 4 4 2
-2 2 2 2 2 2 2 2 4 4 4 4 4 2 4 5 5 5 4 2
-2 7  Sofia~!> Welcome to my store! Do you want to buy something?/> yes Alright, what would you like to purchase: 5 Milk Chocolate 14, 15 Dark Chocolate 14, 24 Oreo Cake 24, 5 Vanilla Cake14, 14 Almond Sponge Cake 15, 34 Velvet Cake 34~> no Come back if you need any sweets!> Thanks for stopping by!>< 4 4 4 4 4 4 4 4 4 4 4 2 4 4 4 4 4 2
+2 4 4 4 4 4 4 2 4 4 4 4 6 Pokeball Shop - Open> 2 8 4 4 4 4 2
+2 8 8 8 8 8 8 2 6 Lobby> 4 4 4 4 2 8 4 7 Trainer Ethan!> Hey there inspiring Pokemon Master, looking to buy Pokeballs?/> yes Great! I only have one item, but it's a great deal: 1 Pokeball~> Thanks for coming!>< 4 4 2
+2 2 2 2 2 2 2 2 4 4 4 4 4 2 8 4 4 4 4 2
+2 7 Sofia~!> Welcome to my store! Do you want to buy something?/> yes Alright, what would you like to purchase: 5 Milk Chocolate 14, 15 Dark Chocolate 14, 24 Oreo Cake 24, 5 Vanilla Cake14, 14 Almond Sponge Cake 15, 34 Velvet Cake 34~> no Come back if you need any sweets!> Thanks for stopping by!>< 4 4 4 4 4 4 4 4 4 4 4 2 8 8 8 8 8 2
 2 4 4 4 4 4 4 2 6 Sofia's Sweets - Open> 4 4 4 4 2 2 2 2 2 2 2
 2 4 4 6 Cakes> 13 13 13 2 4 4 4 4 4 4 4 4 4 4 4 2
 2 9 4 2 2 2 2 2 2 2 2 2 2 4 4 4 4 6 Coconut Mall> 4 2
 2 9 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 C
 2 6 4 2 7 Caretaker Robbery~!> Looking to buy some snacks for your pokemon?|> We sell: 15 Hard Candy 24, 5 Apples 14, 14 Smoothies 15, 24 Fruit Bar 24, 14 Mango Snack 14, 44 Berry Blast 54, 5 Orange 15~> Thanks for stopping buy!>< 4 4 2 6 Pokemon Snacks> 4 4 4 4 4 4 4 4 4 4 2
 2 2 4 2 2 2 2 2 4 4 4 4 4 4 4 4 4 4 4 2
-2 4 0 4 4 4 4 4 4 4 4 7 Bobby> I hear the Pokemon Snacks are great in this area!> 4 4 6 Sushi Shop - Open> 2 2 2 2 2
+2 4 0 4 4 4 4 4 4 4 4 7 Bobby> I hear the Pokemon Snacks are great in this area!>< 4 4 6 Sushi Shop - Open> 2 2 2 2 2
 2 0 5 0 5 4 5 4 5 4 4 4 4 4 4 2 4 4 4 2
 2 4 0 4 4 4 4 4 4 4 4 4 4 4 4 2 4 7 Chef Gordon~!> Welcome to my Sushi Shop, can I get you anything?|> I have: 5 Crab Sushi 14, 14 Rice Balls 15, 24 California Rolls 24, 14 Tempura 15, 5 Squid Sushi 14~> Thanks for your time!>< 4 2
 2 2 2 2 6 Fishery - Closed> 4 4 4 4 4 4 4 4 4 4 2 4 4 4 2

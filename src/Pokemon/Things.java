@@ -11,9 +11,9 @@ import java.util.Scanner;
 /*
  * Letter = change location
  * 15 = dark rock
- * 13 = White
+ * 13 = white
  * 12 = chest
- * 11 = Sand
+ * 11 = sand
  * 10 = black
  * 9 = brown
  * 8 = red
@@ -192,14 +192,13 @@ public class Things {
 				System.out.println("Line not found");
 			}
 			if(!hasDoor) {
-				if (line.equals("15"))
+				if (line.equals("15")) {
 					line = "4";
-				hasDoor = true;
+					hasDoor = true;
+				}
 			}
-			System.out.println(line);
 			replace += line + " ";
 		}
-		System.out.println(replace);
 		try {
 			FileWriter writer = new FileWriter(f, false);
 			writer.write(replace);
