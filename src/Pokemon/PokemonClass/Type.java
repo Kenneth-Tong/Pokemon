@@ -1,4 +1,4 @@
-package Pokemon;
+package Pokemon.PokemonClass;
 
 /*
  * Holds types of pokemon and what is effective

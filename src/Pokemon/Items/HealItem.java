@@ -1,4 +1,4 @@
-package Pokemon;
+package Pokemon.Items;
 
 public class HealItem extends Item{
     private int heal;

@@ -1,5 +1,7 @@
 package Pokemon;
 
+import Pokemon.Items.*;
+
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.File;
@@ -10,7 +12,8 @@ import java.util.Scanner;
 
 /*
  * Letter = change location
- * 15 = dark rock
+ * 15 = door
+ * 14 = dark rock
  * 13 = white
  * 12 = chest
  * 11 = sand
@@ -37,10 +40,11 @@ public class Things {
 	private ArrayList<String> dialogue; //person dialogue only
 	private boolean tallGrass = false, passable = false, person = false, sign = false, talkedTo = false, chest = false, rocket = false, door = false; //talk means there are choices, talkedTo means you're done talking to
 	private Color color;
-	private int amountOfItems; //only applies to chests
+	private int amountOfItems /*only applies to chests*/, lineAt;
 	private Item item;
 
 	public Things(int i, int posX, int posY, int width, int height) {
+		name = Integer.toString(i);
 		switch(i) {
 			case 0:
 				color = new Color(154,205,50);
@@ -168,6 +172,8 @@ public class Things {
 					item = new HealItem(itemName, amountOfItems);
 				}
 		}
+		if(name.contains("#"))
+			lineAt = 1;
 		passable = false;
 		person = true;
 		hitBox = new Rectangle(posX - 5, posY - 5, width + 10, height + 10);
@@ -280,5 +286,14 @@ public class Things {
 				return i;
 		}
 		return -1;
+	}
+	public String toString() {
+		return name;
+	}
+	public void setLineAt(int i) { //resume talking after a fight
+		lineAt = i;
+	}
+	public int getLineAt() {
+		return lineAt;
 	}
 }

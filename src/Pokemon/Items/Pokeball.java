@@ -1,4 +1,4 @@
-package Pokemon;
+package Pokemon.Items;
 
 public class Pokeball extends Item {
     public Pokeball(String name, int x) {

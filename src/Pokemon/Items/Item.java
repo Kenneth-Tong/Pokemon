@@ -1,4 +1,4 @@
-package Pokemon;
+package Pokemon.Items;
 
 public class Item {
 	private String name, Description;

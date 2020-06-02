@@ -1,5 +1,10 @@
 package Pokemon;
 
+import Pokemon.Items.Badge;
+import Pokemon.Items.Item;
+import Pokemon.Items.Key;
+import Pokemon.PokemonClass.Pokemon;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -18,62 +23,46 @@ public class Player {
 		lastX = posX;
 		lastY = posY;
 	}
-
 	public void updateHitBox() {
 		hitBox = new Rectangle(posX, posY, Height, Width);
 	}
-
 	public void moveX() {
 		lastX = posX;
 		posX += moveX;
 		updateHitBox();
 	}
-
 	public void setLocation(int x, int y) {
 		posX = x;
 		posY = y;
 	}
-
 	public void moveY() {
 		lastY = posY;
 		posY += moveY;
 		updateHitBox();
 	}
-
 	public void resetX() {
 		posX = lastX;
 		updateHitBox();
 	}
-
 	public void resetY() {
 		posY = lastY;
 		updateHitBox();
 	}
-
 	public Rectangle getHitBox() {
 		return hitBox;
 	}
-
 	public void setMoveX(int moveX) {
 		this.moveX = moveX;
 	}
-
 	public void setMoveY(int moveY) {
 		this.moveY = moveY;
 	}
-
 	public int getPosX() {
 		return posX;
 	}
-
 	public int getPosY() {
 		return posY;
 	}
-
-	public ArrayList<Item> getInventoryArrayList() {
-		return inventory;
-	}
-
 	public Item getInventory(int i, boolean take) {
 		Item returnItem = inventory.get(i);
 		if(take) {
@@ -92,17 +81,15 @@ public class Player {
 		}
 		return list;
 	}
-
 	public void addInventory(Item a) {
 		for(Item n: inventory) {
-			if(a.equals(n)) {
+			if(a.getName().equals(n.getName())) {
 				n.addItem(a.getAmount()); //combined amount of items
 				return;
 			}
 		}
 		inventory.add(a);
 	}
-
 	public void setIsOnSuperBike(boolean n) {
 		if(n)
 			velocity = 7;
@@ -173,13 +160,10 @@ public class Player {
 	}
 
 	public int getPokemonDollar() { return pokemonDollar; }
-
 	public void addPokemonDollar(int x) { pokemonDollar += x; }
-
 	public void withdrawPokemonDollar(int x) {
 		pokemonDollar -= x;
 	}
-
 	public void setIsOnBike(boolean n) {
 		if(n)
 			velocity = 5;

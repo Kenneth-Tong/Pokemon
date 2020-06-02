@@ -1,10 +1,10 @@
 package Pokemon;
 
-import jdk.nashorn.internal.scripts.JO;
+import Pokemon.Items.*;
+import Pokemon.PokemonClass.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import javax.sound.sampled.Clip;
 import javax.swing.*;
@@ -45,7 +45,6 @@ public class HotBar extends JPanel implements ActionListener {
 		panel = x;
 	}
 	public void update(Player p, Pokemon opponentPokemon, boolean playerFight) {
-		super.remove(pokemon);
 		super.remove(inventory);
 		super.remove(key);
 		super.remove(stats);
@@ -88,10 +87,6 @@ public class HotBar extends JPanel implements ActionListener {
 		inventory.addActionListener(this);
 		super.add(inventory);
 
-		pokemon = new JButton("Pokemon");
-		pokemon.addActionListener(this);
-		super.add(pokemon);
-
 		stats = new JButton("Stats");
 		stats.addActionListener(this);
 		super.add(stats);
@@ -130,7 +125,7 @@ public class HotBar extends JPanel implements ActionListener {
 				showStats(pokemonList, inventoryList);
 			}
 			if (btn == pokemon) {
-				inspectPokemon(pokemonList, pokemonNames);
+				inspectPokemon(pokemonList, pokemonNames, pokemonTeamNames);
 			}
 			if (btn == inventory) {
 				useInventory(inventoryNameList, pokemonList);
@@ -140,6 +135,9 @@ public class HotBar extends JPanel implements ActionListener {
 			}
 		} else { //players turn
 			if(GuiMap.playerTurn) {
+				if (btn == pokemon) {
+					inspectPokemon(pokemonList, pokemonNames, pokemonTeamNames);
+				}
 				if (btn == pokemonAttack) {
 					pokemonAttackOpponent(movesName, moves, pokemonList);
 				}
@@ -188,41 +186,53 @@ public class HotBar extends JPanel implements ActionListener {
 		JOptionPane.showMessageDialog(null, show, "Pokemon", JOptionPane.PLAIN_MESSAGE);
 
 	}
-	public void inspectPokemon(Pokemon[] pokemonList, String[] pokemonNames) {
+	public void inspectPokemon(Pokemon[] pokemonList, String[] pokemonNames, String[] pokemonTeamNames) {
 		if (pokemonList == null)
 			JOptionPane.showMessageDialog(null, "You don't have any pokemon", "Pokemon", JOptionPane.ERROR_MESSAGE);
 		else {
-			String pokemon = (String) JOptionPane.showInputDialog(null,
-					"Select a Pokemon:",
-					"Pokemon",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					pokemonNames,
-					pokemonNames[0]);
-			if (pokemon == null || (("".equals(pokemon)))) { //nothing is inputted
-				panel.requestFocus();
-				return;
+			String pokemon = "";
+			if(GuiMap.pokemonFight) {
+				pokemon = (String) JOptionPane.showInputDialog(null,
+						"Select a Pokemon:",
+						"Pokemon",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						pokemonNames,
+						pokemonNames[0]);
+			} else {
+				pokemon = (String) JOptionPane.showInputDialog(null,
+						"Select a Pokemon:",
+						"Pokemon Team",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						pokemonTeamNames,
+						pokemonTeamNames[0]);
 			}
-			int pokemonLocation = -1;
-			for (int k = 0; k < pokemonNames.length; k++) {
-				if (pokemonNames[k].equals(pokemon))
-					pokemonLocation = k;
-			}
-			String moves = "";
-			for (int m = 0; m < 4; m++) { //4 moves per pokemon
-				moves += pokemonList[pokemonLocation].getAttack(m) + "|Damage: " + pokemonList[pokemonLocation].getAttack(m).getMax() + " - " + pokemonList[pokemonLocation].getAttack(m).getMin() + " Move Point: " + pokemonList[pokemonLocation].getAttack(m).getCurrentMovePoint() + "/" + pokemonList[pokemonLocation].getAttack(m).getMovePoint() + "\n";
-			}
-			JOptionPane.showMessageDialog(null,
-					pokemonList[pokemonLocation].getName() +
-							"\nType: " +
-							pokemonList[pokemonLocation].getType() +
-							"\nMoves: \n" +
-							moves +
-							"Health: " +
-							pokemonList[pokemonLocation].getHealth() + "/" +
-							pokemonList[pokemonLocation].getMaxHealth(),
-					pokemonNames[pokemonLocation],
-					JOptionPane.INFORMATION_MESSAGE);
+				if (pokemon == null || (("".equals(pokemon)))) { //nothing is inputted
+					panel.requestFocus();
+					return;
+				}
+				int pokemonLocation = -1;
+				for (int k = 0; k < pokemonNames.length; k++) {
+					if (pokemonNames[k].equals(pokemon))
+						pokemonLocation = k;
+				}
+				String moves = "";
+				for (int m = 0; m < 4; m++) { //4 moves per pokemon
+					moves += player.getPokemon(0).getPokemonMoves(m).getDescription() + "\n";
+				}
+				JOptionPane.showMessageDialog(null,
+						pokemonList[pokemonLocation].getName() +
+								"\nType: " +
+								pokemonList[pokemonLocation].getType() +
+								"\nMoves: \n" +
+								moves +
+								"Health: " +
+								pokemonList[pokemonLocation].getHealth() + "/" +
+								pokemonList[pokemonLocation].getMaxHealth(),
+						pokemonNames[pokemonLocation],
+						JOptionPane.INFORMATION_MESSAGE);
+
 		}
 	}
 	public void playerFlee() {
@@ -258,16 +268,20 @@ public class HotBar extends JPanel implements ActionListener {
 				moveLocation = k;
 		}
 
-		int moveDone = moves[moveLocation].doMove(); //flat damage no reduction or addiction
-		if(moveDone > 0) {
-			if(moves[moveLocation].isHeal()) {
+		if(player.getPokemon(0).hasMovePoint(moveLocation)) { //if it has move points left
+			int moveDone = moves[moveLocation].doMove(); //flat damage no reduction or addiction
+			if(moves[moveLocation] instanceof Heal) {
 				pokemonList[0].heal(moveDone);
 				JOptionPane.showMessageDialog(null, pokemonList[0].getName() + " healed using " + moveSelected + "!");
 				JOptionPane.showMessageDialog(null, pokemonList[0].getName() + " has been healed to " + pokemonList[0].getHealth() + " hp", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-			} else {
-				int damage = opponentPokemon.damageTaken(moveDone, moves[moveLocation].getType());
-
+				panel.repaint();
+			} else if(moves[moveLocation] instanceof Damage) {
 				JOptionPane.showMessageDialog(null, pokemonList[0].getName() + " used " + moveSelected + "!");
+
+				int damage = opponentPokemon.damageTaken(moves[moveLocation], player.getPokemon(0).getStage(), player.getPokemon(0).getStageTurn());
+
+				panel.repaint();
+
 				switch(opponentPokemon.getEffective()) { //only if it's effective or not
 					case "no":
 						JOptionPane.showMessageDialog(null, "It was not very effective...", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
@@ -277,25 +291,32 @@ public class HotBar extends JPanel implements ActionListener {
 						break;
 				}
 				JOptionPane.showMessageDialog(null, "Damage Dealt: " + damage, "Move", JOptionPane.INFORMATION_MESSAGE);
+				if(moves[moveLocation] instanceof OverTimeDamage) {
+					JOptionPane.showMessageDialog(null, opponentPokemon.getName() + " is now burning!", "Move", JOptionPane.INFORMATION_MESSAGE);
+					panel.repaint();
+				}
 				if(opponentPokemon.getHealth() < 0) //don't go negative!
 					JOptionPane.showMessageDialog(null, opponentPokemon.getName() + " now has 0 hp left", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
 				else
 					JOptionPane.showMessageDialog(null, opponentPokemon.getName() + " now has " + opponentPokemon.getHealth() + " hp left", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+			} else if(moves[moveLocation] instanceof Stage) {
+				JOptionPane.showMessageDialog(null, pokemonList[0].getName() + " used " + moveSelected + "!");
+				JOptionPane.showMessageDialog(null, player.getPokemon(0).getName() + " has set the stage to buff " + player.getPokemon(0).getType().toString() + " attacks", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+				if(opponentPokemon.getStageTurn() > 0) {
+					JOptionPane.showMessageDialog(null, "The stage is no longer buffing " + opponentPokemon.getType().toString() + " attacks", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+					opponentPokemon.setStageTurn(0);
+				}
+				player.getPokemon(0).setStage();
+				panel.repaint();
 			}
-			if(opponentPokemon.hasFainted()) {
-				JOptionPane.showMessageDialog(null, opponentPokemon.getName() + " has fainted!", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-				JOptionPane.showMessageDialog(null, "You've won!", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-				int money = (int) (Math.random() * 10) + 5;
-				player.addPokemonDollar(money);
-				JOptionPane.showMessageDialog(null, "You've gained " + money + " Pokedollars", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-				GuiMap.clipFight.stop();
-				GuiMap.clipMusic.setMicrosecondPosition(GuiMap.clipTimePosition);
-				GuiMap.clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-				GuiMap.pokemonFight = false;
-				panel.requestFocus();
-				return;
+			if(player.getPokemon(0).isBurning()) {
+				player.getPokemon(0).burn();
+				panel.repaint();
+				checkFight();
 			}
+			player.getPokemon(0).turnPass();
 			GuiMap.playerTurn = false;
+			checkFight(); //checks the current battle
 		} else {
 			JOptionPane.showMessageDialog(null, "You have no more move points for " + moves[moveLocation], player.getPokemon(0).getName(), JOptionPane.ERROR_MESSAGE);
 		}
@@ -394,7 +415,7 @@ public class HotBar extends JPanel implements ActionListener {
 			}
 			if(player.getInventory(inventoryLocation, false) instanceof Bike) {
 				if (!GuiMap.pokemonFight) {
-					if (!player.getIsOnBike() || !player.getIsOnSuperBike()) {
+					if (!player.getIsOnBike() && !player.getIsOnSuperBike()) {
 						int answer = JOptionPane.showConfirmDialog(null,
 								"Do you want to equip the " + player.getInventory(inventoryLocation, false).getName() + "?",
 								"Inventory",
@@ -404,7 +425,7 @@ public class HotBar extends JPanel implements ActionListener {
 							((Bike) player.getInventory(inventoryLocation, false)).setBike(true, player);
 							JOptionPane.showMessageDialog(null, "You equipped the " + player.getInventory(inventoryLocation, false).getName());
 						}
-					} else {
+					} else if(player.getIsOnBike() || player.getIsOnSuperBike()){
 						int answer = JOptionPane.showConfirmDialog(null,
 								"Do you want to unequip the " + player.getInventory(inventoryLocation, false).getName() + "?",
 								"Inventory",
@@ -473,6 +494,9 @@ public class HotBar extends JPanel implements ActionListener {
 							JOptionPane.showMessageDialog(null, "You caught " + opponentPokemon.getName() + "!", "Catching", JOptionPane.INFORMATION_MESSAGE);
 							JOptionPane.showMessageDialog(null, "[Check your Pokedex for more information]", "Catching", JOptionPane.INFORMATION_MESSAGE);
 							GuiMap.pokemonFight = false;
+							GuiMap.clipFight.stop();
+							GuiMap.clipMusic.setMicrosecondPosition(GuiMap.clipTimePosition);
+							GuiMap.clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 						} else {
 							JOptionPane.showMessageDialog(null, "The " + opponentPokemon.getName() + " was not caught.", "Catching", JOptionPane.ERROR_MESSAGE);
 							GuiMap.playerTurn = false;
@@ -499,7 +523,20 @@ public class HotBar extends JPanel implements ActionListener {
 			caught = false;
 	}
 	public void checkFight() {
-		if(player.getPokemon().get(0).hasFainted() && player.hasPokemon()) {
+		if(opponentPokemon.hasFainted()) {
+			JOptionPane.showMessageDialog(null, opponentPokemon.getName() + " has fainted!", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "You've won!", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+			int money = (int) (Math.random() * 10) + 5;
+			player.addPokemonDollar(money);
+			JOptionPane.showMessageDialog(null, "You've gained " + money + " Pokedollars", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+			GuiMap.clipFight.stop();
+			GuiMap.clipMusic.setMicrosecondPosition(GuiMap.clipTimePosition);
+			GuiMap.clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
+			GuiMap.pokemonFight = false;
+			panel.requestFocus();
+			return;
+		}
+		if(player.getPokemon(0).hasFainted() && player.hasPokemon()) {
 			String[] names = getPokemonTeamNames();
 			String pokemonSwitch1 = (String) JOptionPane.showInputDialog(null,
 					player.getPokemon().get(0) + " has fainted!" +

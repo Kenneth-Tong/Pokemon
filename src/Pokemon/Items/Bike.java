@@ -1,4 +1,6 @@
-package Pokemon;
+package Pokemon.Items;
+
+import Pokemon.Player;
 
 public class Bike extends Item{
     boolean superBike = false;

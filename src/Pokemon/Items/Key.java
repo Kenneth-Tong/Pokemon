@@ -1,4 +1,4 @@
-package Pokemon;
+package Pokemon.Items;
 
 public class Key extends Item {
     private Boolean TeamRocket;

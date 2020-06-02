@@ -14,5 +14,5 @@
 3 3 3 3 3 3 3 3 3 4 3 3 3 3 3 3 3 3 3 3
 1 0 0 0 0 0 0 5 0 4 6 "This is our bridge now!" - Team Rocket> 0 0 0 0 0 7 Quinn#> Magikarp3> I just caught a cool Pokemon by the water!|> I bet with this addition to my Pokemon team, I'll easily beat you!#> That was a good fight! I guess I still have to train harder.>< 0 0 1
 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 1 1
-1 1 5 1 0 7 Rin> The strong bridge was locked by one of Team Rocket's goons and I can't cross...|> Maybe you could find someone who would be willing to help!> I wonder what's across the river...>< 0 0 0 0 0 0 0 0 6 Poke-Market> 0 1 1 1
+1 1 5 1 0 7 Rin> The strong bridge was locked by one of Team Rocket's goons and I can't cross...|> Maybe you could find someone who would be willing to help!> I wonder what's across the river...>< 0 0 0 0 0 0 0 0 0 6 Poke-Market> 0 1 1 1
 1 1 1 1 1 0 0 0 0 0 0 0 G 0 0 0 1 1 1 1

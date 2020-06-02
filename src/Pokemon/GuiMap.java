@@ -1,6 +1,10 @@
 package Pokemon;
 
-import sun.awt.SunToolkit;
+import Pokemon.Items.Badge;
+import Pokemon.Items.HealItem;
+import Pokemon.Items.Item;
+import Pokemon.Items.Pokeball;
+import Pokemon.PokemonClass.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,29 +29,29 @@ import javax.swing.*;
  */
 
 public class GuiMap extends JPanel implements ActionListener, KeyListener {
+	private static String currentLocation;
 	private final Player player;
 	public static Clip clipMusic, clipFight, getItem;
 	public static long clipTimePosition;
-	private final Things[][] currentBoard;
+	private Things[][] currentBoard = new Things[20][20];
+	private ArrayList<Things[][]> usedBoards = new ArrayList<>(); //cannot talk to already spoken to people
 	private Things opponentPlayer = null;
 	private int moveAmount;
 	private final int Height;
 	private final int Width;
-	private String currentLocation = "A";
-	public static boolean pokemonFight, playerTurn = true, gameFinished = false;
+	public static boolean pokemonFight = false, playerTurn = true, gameFinished = false;
 	private Pokemon appear, pokemonFighter; //Will change all the time due to constant new Pokemon created
 	private HotBar hotbar;
+	public static Color stage, sky;
 
 	public GuiMap(Player p, int w, int h) {
 		Height = h;
-		Width = w;
-		pokemonFight = false;
-		int heightBoard = 20;
-		int widthBoard = 20;
-		currentBoard = new Things[widthBoard][heightBoard];
+		Width = w;;
 		player = p;
 		player.setLocation(10, 570);
-		setBoard("A"); //starting area
+		for(int i = 0; i < 13; i++) //preset board so all values are null
+			usedBoards.add(null);
+		setBoard("B", true); //starting area
 		Timer timer = new Timer(25, this);
 		timer.start();
 		super.setLayout(null);
@@ -85,10 +89,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			g.setColor(player.getColor());
 			g.fillRect(player.getPosX(), player.getPosY(), player.getWidth(), player.getHeight());
 		} else {
-			g.setColor(new Color(102, 178, 255)); //sky
+			g.setColor(sky); //sky
 			g.fillRect(0, 0, Width, Height / 2);
 
-			g.setColor(Color.GREEN.darker()); //ground
+			g.setColor(stage); //ground
 			g.fillRect(0, Height / 3, Width, Height);
 
 			g.setColor(appear.getColor());
@@ -152,14 +156,14 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				for (int i = 0; i < currentBoard.length; i++) { //draw board
 					for (int c = 0; c < currentBoard[0].length; c++) {
 						if (!currentBoard[i][c].getConnectingLocation().equals("") && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
-							System.out.println(player.getPosX() + " " + player.getPosY());
-							setBoard(currentBoard[i][c].getConnectingLocation());
+							setBoard(currentBoard[i][c].getConnectingLocation(), false);
 						} else if (currentBoard[i][c].isSign() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox()))
 							readMessage(currentBoard[i][c]);
 						else if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {//person interact
-							if (gameFinished && currentBoard[i][c].getName().contains("Terry") && player.hasBadge() == -1) {
+							player.setMoveY(0);
+							player.setMoveX(0);
+							if (gameFinished && currentBoard[i][c].getName().contains("Terry")) {
 								talkToTerry(); //you're done!
-								return;
 							} else {
 								talkToPerson(currentBoard[i][c]);
 							}
@@ -185,13 +189,14 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									} catch (UnsupportedAudioFileException | IOException | LineUnavailableException d) {
 										d.printStackTrace();
 									}
+									player.getInventory(player.hasKey(false), true);
 									JOptionPane.showMessageDialog(null, "You unlocked the door!", "Unlocked", JOptionPane.INFORMATION_MESSAGE);
+									getItem.stop();
+									clipMusic.setMicrosecondPosition(clipTimePosition);
+									clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
+									setBoard(currentLocation, false);
+									usedBoards.set(currentLocation.compareTo("A"), currentBoard);
 								}
-								getItem.stop();
-								clipMusic.setMicrosecondPosition(clipTimePosition);
-								clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-								setBoard(currentLocation);
-								return;
 							} else if (player.hasKey(true) > -1 && currentBoard[i][c].isRocket()) {
 								int answer = JOptionPane.showConfirmDialog(null,
 										"Do you use a key to unlock Team Rocket's door?",
@@ -210,13 +215,13 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									} catch (UnsupportedAudioFileException | IOException | LineUnavailableException d) {
 										d.printStackTrace();
 									}
+									player.getInventory(player.hasKey(true), true);
 									JOptionPane.showMessageDialog(null, "You unlocked Team Rocket's door!", "Unlocked", JOptionPane.INFORMATION_MESSAGE);
+									getItem.stop();
+									clipMusic.setMicrosecondPosition(clipTimePosition);
+									clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
+									setBoard(currentLocation, false);
 								}
-								getItem.stop();
-								clipMusic.setMicrosecondPosition(clipTimePosition);
-								clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-								setBoard(currentLocation);
-								return;
 							}
 						}
 					}
@@ -252,6 +257,8 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		playerTurn = true;
 		hotbar.update(player, appear, f);
 
+		resetStage();
+
 		//Pause the music
 		clipTimePosition = clipMusic.getMicrosecondPosition();
 		clipMusic.stop();
@@ -265,497 +272,574 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		}
 	}
 
-		public void PokemonActions () {
-			if (!playerTurn && appear.getHealth() > 0) {
-				int move;
-				PokemonMove moveName;
-				if (appear.getHealth() < appear.getMaxHealth() / 4 && appear.hasHealingMove()) {
-					int random = (int) (Math.random() * 2);
+	public void PokemonActions () {
+		if(playerTurn) {
+			if(!player.getPokemon(0).hasMoves()) {
+				JOptionPane.showMessageDialog(null, player.getPokemon(0).getName() + " has no more energy to fight!");
+				player.getPokemon(0).setHealth(0);
+				repaint();
+				hotbar.checkFight(); //checks the current battle
+			}
+		} else if (!playerTurn && !appear.hasFainted()) {
+			int move;
+			PokemonMove moveName;
+			if (!appear.hasMoves()) {
+				JOptionPane.showMessageDialog(null, appear.getName() + " has no more energy to fight!");
+				appear.setHealth(0);
+				repaint();
+			} else {
+				if (appear.getHealth() < appear.getMaxHealth() / 4 && appear.hasHealingMove() > -1 && appear.hasMovePoint(appear.hasHealingMove())) { //make them heal forced action
+					int random = appear.hasHealingMove();
 					move = appear.getPokemonMoves(random).doMove();
 					moveName = appear.getPokemonMoves(random);
 					appear.heal(move);
 					JOptionPane.showMessageDialog(null, appear.getName() + " healed using " + moveName + "!");
 					JOptionPane.showMessageDialog(null, appear.getName() + " now has " + move + " hp");
+					repaint();
 				} else {
 					int random = (int) (Math.random() * 4);
-					move = appear.getPokemonMoves(random).doMove();
+					if (appear.getStageTurn() > 0) { //has a stage and isn't done yet
+						random = (int) (Math.random() * 3);
+					}
 					moveName = appear.getPokemonMoves(random);
-					int damage = player.getPokemon().get(0).damageTaken(move, appear.getPokemonMoves(random).getType());
-					repaint(); //i want the damage to show
-					JOptionPane.showMessageDialog(null, appear.getName() + " used " + moveName, "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-
-					switch (player.getPokemon().get(0).getEffective()) { //only if it's effective or not
-						case "no":
-							JOptionPane.showMessageDialog(null, "It was not very effective...", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-							break;
-						case "yes":
-							JOptionPane.showMessageDialog(null, "It was super effective!", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-							break;
+					if(appear.getPokemonMoves(random) instanceof Heal) {
+						move = appear.getPokemonMoves(random).doMove();
+						moveName = appear.getPokemonMoves(random);
+						appear.heal(move);
+						JOptionPane.showMessageDialog(null, appear.getName() + " healed using " + moveName + "!");
+						JOptionPane.showMessageDialog(null, appear.getName() + " now has " + move + " hp");
+						repaint();
+					} else {
+						JOptionPane.showMessageDialog(null, appear.getName() + " used " + moveName, "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+						if (appear.getPokemonMoves(random) instanceof Stage) {
+							JOptionPane.showMessageDialog(null, appear.getName() + " has set the stage to buff " + appear.getType().toString() + " attacks", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+							if(player.getPokemon(0).getStageTurn() > 0) {
+								JOptionPane.showMessageDialog(null, "The stage is no longer buffing " + player.getPokemon(0).getType().toString() + " attacks", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+								player.getPokemon(0).setStageTurn(0);
+							}
+							appear.setStage();
+							repaint();
+						} else if (appear.getPokemonMoves(random) instanceof Damage) {
+							int damage = player.getPokemon(0).damageTaken(appear.getPokemonMoves(random), appear.getStage(), appear.getStageTurn());
+							repaint();
+							switch (player.getPokemon().get(0).getEffective()) { //only if it's effective or not
+								case "no":
+									JOptionPane.showMessageDialog(null, "It was not very effective...", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+									break;
+								case "yes":
+									JOptionPane.showMessageDialog(null, "It was super effective!", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+									break;
+							}
+							JOptionPane.showMessageDialog(null, "Damage Dealt: " + damage, "Move", JOptionPane.INFORMATION_MESSAGE);
+							if (appear.getPokemonMoves(random) instanceof OverTimeDamage)
+								JOptionPane.showMessageDialog(null, player.getPokemon(0).getName() + " is now burning!", "Move", JOptionPane.INFORMATION_MESSAGE);
+							if (player.getPokemon().get(0).getHealth() < 0) { //don't go negative!
+								JOptionPane.showMessageDialog(null, player.getPokemon().get(0).getName() + " now has 0 hp left", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+							} else
+								JOptionPane.showMessageDialog(null, player.getPokemon().get(0).getName() + " now has " + player.getPokemon().get(0).getHealth() + " hp left", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+						}
 					}
-					JOptionPane.showMessageDialog(null, "Damage Dealt: " + damage, "Move", JOptionPane.INFORMATION_MESSAGE);
-					if (player.getPokemon().get(0).getHealth() < 0) { //don't go negative!
-						JOptionPane.showMessageDialog(null, player.getPokemon().get(0).getName() + " now has 0 hp left", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
-					}
-					else
-						JOptionPane.showMessageDialog(null, player.getPokemon().get(0).getName() + " now has " + player.getPokemon().get(0).getHealth() + " hp left", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
 				}
-				playerTurn = true;
 			}
+			playerTurn = true;
 			hotbar.checkFight(); //checks the current battle
-		}
 
-		public void openingMessage () {
-			JOptionPane.showMessageDialog(null,
-					"This is the world of Pokemon!");
-			String answer = JOptionPane.showInputDialog(null,
-					"What's your name, Pokemon trainer?", null);
-			if (answer == null || (("".equals(answer)))) {
-				answer = "Anonymous";
+			if(appear.isBurning()) {
+				appear.burn();
+				if (player.getPokemon().get(0).getHealth() < 0) //don't go negative!
+					JOptionPane.showMessageDialog(null, appear.getName() + " took burn damage and now has 0 hp", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+				else
+					JOptionPane.showMessageDialog(null, appear.getName() + " took burn damage and now has " + appear.getHealth() + " hp", "Pokemon Battle", JOptionPane.INFORMATION_MESSAGE);
+				repaint();
+				hotbar.checkFight();
 			}
-			answer = answer.trim();
-			player.setName(answer);
-			String[] type = new String[]{"Fire", "Grass", "Rock", "Water"};
-			String trainerType = (String) JOptionPane.showInputDialog(null,
-					"What trainer will you be:",
-					"Trainer",
-					JOptionPane.QUESTION_MESSAGE,
-					null,
-					type,
-					type[0]);
-			player.setTrainerType(trainerType);
-			switch (trainerType) {
-				case "Fire":
-					player.setColor(Color.RED);
-					break;
-				case "Grass":
-					player.setColor(Color.GREEN.darker().darker());
-					break;
-				case "Rock":
-					player.setColor(Color.lightGray);
-					break;
-				case "Water":
-					player.setColor(Color.BLUE);
-					break;
-				default:
-					player.setColor(Color.BLACK);
-					break;
+			if(appear.getStageTurn() == 0 && player.getPokemon(0).getStageTurn() == 0) {
+				resetStage();
 			}
-			JOptionPane.showMessageDialog(null,
-					"You're all set, " + answer + ", welcome and explore your new world!");
-		}
-
-		public void keyReleased (KeyEvent e){
-			int key = e.getKeyCode();
-			if (!pokemonFight) {
-				if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP)
-					player.setMoveY(0);
-				if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_LEFT)
-					player.setMoveX(0);
-			}
-		}
-
-		public void keyTyped (KeyEvent e){
-		}
-
-		public void actionPerformed (ActionEvent e){
-			if (!pokemonFight) {
-				if (player.isLost()) {
-					currentLocation = "B";
-					player.setLost(false);
-					JOptionPane.showMessageDialog(null, "Be careful next time! Give your Pokemon a rest for a bit before you continue " + player.getName() + ".", "Nurse Joy", JOptionPane.PLAIN_MESSAGE);
-					String PokemonHealed = heal();
-					JOptionPane.showMessageDialog(null, "Pokemon Healed:" + PokemonHealed, "", JOptionPane.INFORMATION_MESSAGE);
-					opponentPlayer = null; //reset progress
-					appear = null;
-					hotbar.reset();
-				} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
-					if(opponentPlayer != null) {
-						opponentPlayer.setTalkedTo(true); //they won!
-						opponentPlayer = null;
-					}
-					appear = null;
-					hotbar.reset();
-				}
-				moveAmount = player.getVelocity(); //always reset just in case if on bike
-				player.moveX();
-				checkX();
-				player.moveY();
-				checkY();
-				getPokemon();
-			} else {
-				PokemonActions();
-			}
+			appear.turnPass();
 			repaint();
 		}
-		public void createPokemon () {
-			if (!pokemonFight) {
-				if (!currentLocation.equals("I") && !currentLocation.equals("J")) {
-					int randomPokemon = (int) (Math.random() * 4);
-					appear = new Pokemon(currentLocation, randomPokemon);
-				} else {
-					appear = new Pokemon(currentLocation, 3); //only rock Pokemon spawn in this area
-				}
-			}
-			JOptionPane.showMessageDialog(null, "You found a wild " + appear.getName() + "!", "Wild Pokemon", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	public void openingMessage () {
+		JOptionPane.showMessageDialog(null,
+				"This is the world of Pokemon!");
+		String answer = JOptionPane.showInputDialog(null,
+				"What's your name, Pokemon trainer?", null);
+		if (answer == null || (("".equals(answer)))) {
+			answer = "Anonymous";
 		}
-		public void checkX () {
-			for (int i = 0; i < currentBoard.length; i++) { //draw board
-				for (int c = 0; c < currentBoard[0].length; c++) {
-					if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
-						player.resetX();
-					} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
-						player.resetX();
-					}
+		answer = answer.trim();
+		player.setName(answer);
+		String[] type = new String[]{"Fire", "Grass", "Rock", "Water"};
+		String trainerType = (String) JOptionPane.showInputDialog(null,
+				"What trainer will you be:",
+				"Trainer",
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				type,
+				type[0]);
+		player.setTrainerType(trainerType);
+		switch (trainerType) {
+			case "Fire":
+				player.setColor(Color.RED);
+				break;
+			case "Grass":
+				player.setColor(Color.GREEN.darker().darker());
+				break;
+			case "Rock":
+				player.setColor(Color.lightGray);
+				break;
+			case "Water":
+				player.setColor(Color.BLUE);
+				break;
+			default:
+				player.setColor(Color.BLACK);
+				break;
+		}
+		JOptionPane.showMessageDialog(null,
+				"You're all set, " + answer + ", welcome and explore your new world!");
+	}
+
+	public void keyReleased (KeyEvent e){
+		int key = e.getKeyCode();
+		if (!pokemonFight) {
+			if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP)
+				player.setMoveY(0);
+			if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_LEFT)
+				player.setMoveX(0);
+		}
+	}
+
+	public void keyTyped (KeyEvent e){
+	}
+
+	public void actionPerformed (ActionEvent e){
+		if (!pokemonFight) {
+			if (player.isLost()) {
+				currentLocation = "B";
+				player.setLost(false);
+				JOptionPane.showMessageDialog(null, "Be careful next time! Give your Pokemon a rest for a bit before you continue " + player.getName() + ".", "Nurse Joy", JOptionPane.PLAIN_MESSAGE);
+				String PokemonHealed = heal();
+				JOptionPane.showMessageDialog(null, "Pokemon Healed:" + PokemonHealed, "", JOptionPane.INFORMATION_MESSAGE);
+				getThingSimilar(opponentPlayer).setLineAt(1);
+				getThingSimilar(opponentPlayer).setTalkedTo(false);
+				opponentPlayer = null; //reset progress
+				appear = null;
+				hotbar.reset();
+			} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
+				if(opponentPlayer != null) {
+					getThingSimilar(opponentPlayer).setTalkedTo(true); //they won!
+					opponentPlayer = null;
 				}
+				appear = null;
+				hotbar.reset();
 			}
-			if (player.getHitBox().getX() < 0 || player.getHitBox().getX() + player.getHitBox().getWidth() > Width) { //some reason the screen is flipped
-				player.resetX();
+			moveAmount = player.getVelocity(); //always reset just in case if on bike
+			player.moveX();
+			checkX();
+			player.moveY();
+			checkY();
+			getPokemon();
+		} else {
+			PokemonActions();
+		}
+		repaint();
+	}
+
+	public void createPokemon () {
+		if (!pokemonFight) {
+			if (!currentLocation.equals("I") && !currentLocation.equals("J")) {
+				int randomPokemon = (int) (Math.random() * 4);
+				appear = new Pokemon(currentLocation, randomPokemon);
+			} else {
+				appear = new Pokemon(currentLocation, 3); //only rock Pokemon spawn in this area
 			}
 		}
-		public void checkY () {
-			for (int i = 0; i < currentBoard.length; i++) { //draw board
-				for (int c = 0; c < currentBoard[0].length; c++) {
-					if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
-						player.resetY();
-					} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() ||  currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
-						player.resetY();
-					}
-				}
-			}
-			if (player.getHitBox().getY() < 0 || player.getHitBox().getY() + player.getHitBox().getHeight() > Height) {
-				player.resetY();
+		JOptionPane.showMessageDialog(null, "You found a wild " + appear.getName() + "!", "Wild Pokemon", JOptionPane.INFORMATION_MESSAGE);
+	}
+	public Things getThingSimilar(Things x) {
+		for (int i = 0; i < currentBoard.length; i++) {
+			for (int c = 0; c < currentBoard[0].length; c++) {
+				if(currentBoard[i][c].equals(x))
+					return currentBoard[i][c];
 			}
 		}
-		public void talkToPerson (Things n){ //talking to a person
-			boolean infiniteTalk = false, gift = false, nurse = false, shop = false;
-			String answer = "", name = n.getName();
-			int k = 0; //starting element
-			if (name.contains("!")) {
-				infiniteTalk = true;
-				name = name.substring(0, n.getName().length() - 1);
-			}
-			if (name.contains(";")) {
-				k = 1; //the gift is first
-				gift = true;
-				name = name.substring(0, n.getName().length() - 1);
-			}
-			if (name.contains("#")) {//this will be used for the fight
-				name = name.substring(0, name.length() - 1);
-				if (player.getPokemon().size() == 0) {
-					JOptionPane.showMessageDialog(null, "You should see Professor Oak first to get your first Pokemon before I can help.", name, JOptionPane.INFORMATION_MESSAGE);
-					return;
+		return null;
+	}
+	public void checkX () {
+		for (int i = 0; i < currentBoard.length; i++) {
+			for (int c = 0; c < currentBoard[0].length; c++) {
+				if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
+					player.resetX();
+				} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+					player.resetX();
 				}
-				k = 1;
-				String typeString = n.getDialogue().get(0).substring(n.getDialogue().get(0).length() - 1);
-				int typeInt = Integer.parseInt(typeString);
-				String PokemonName = n.getDialogue().get(0).substring(0, n.getDialogue().get(0).length() - 1);
-				pokemonFighter = new Pokemon(currentLocation, typeInt, PokemonName);
 			}
-			if (name.contains("~")) {
-				shop = true;
-				name = name.substring(0, name.length() - 1);
-			}
-			if (n.isChest()) {
-				if (!n.isTalkedTo()) {
-					String itemName = n.getItem().getName();
-					if (n.getAmountOfItems() > 1) //add the s
-						itemName = n.getItem().getName() + "s";
-					String amount = Integer.toString(n.getAmountOfItems());
-					if(amount.equals("1"))
-						amount = "a";
-					player.addInventory(n.getItem());
-					clipTimePosition = clipMusic.getMicrosecondPosition();
-					clipMusic.stop();
-					try {
-						AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-						getItem = AudioSystem.getClip();
-						getItem.open(inputStream);
-						getItem.start();
-					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-						e.printStackTrace();
-					}
-					JOptionPane.showMessageDialog(null, "You got " + amount + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
-					JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", name, JOptionPane.INFORMATION_MESSAGE);
-					n.setTalkedTo(true);
-					getItem.stop();
-					clipMusic.setMicrosecondPosition(clipTimePosition);
-					clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-				} else {
-					JOptionPane.showMessageDialog(null, "You've already opened this chest", name, JOptionPane.INFORMATION_MESSAGE);
+		}
+		if (player.getHitBox().getX() < 0 || player.getHitBox().getX() + player.getHitBox().getWidth() > Width) { //some reason the screen is flipped
+			player.resetX();
+		}
+	}
+	public void checkY () {
+		for (int i = 0; i < currentBoard.length; i++) { //draw board
+			for (int c = 0; c < currentBoard[0].length; c++) {
+				if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
+					player.resetY();
+				} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() ||  currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+					player.resetY();
 				}
+			}
+		}
+		if (player.getHitBox().getY() < 0 || player.getHitBox().getY() + player.getHitBox().getHeight() > Height) {
+			player.resetY();
+		}
+	}
+	public void talkToPerson (Things n){ //talking to a person
+		boolean infiniteTalk = false, gift = false, nurse = false, shop = false;
+		String answer = "", name = n.getName();
+		int k = 0; //starting element
+		if (name.contains("!")) {
+			infiniteTalk = true;
+			name = name.substring(0, n.getName().length() - 1);
+		}
+		if (name.contains(";")) {
+			k = 1; //the gift is first
+			gift = true;
+			name = name.substring(0, n.getName().length() - 1);
+		}
+		if (name.contains("#")) {//this will be used for the fight
+			k = n.getLineAt();
+			name = name.substring(0, name.length() - 1);
+			if (player.getPokemon().size() == 0) {
+				JOptionPane.showMessageDialog(null, "You should see Professor Oak first to get your first Pokemon before I can help.", name, JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
-			if (name.contains("Nurse")) {
-				if (player.getPokemon().size() == 0) {
-					JOptionPane.showMessageDialog(null, "Sorry, you have no Pokemon yet!", name, JOptionPane.INFORMATION_MESSAGE);
-					JOptionPane.showMessageDialog(null, "You should see Professor Oak first to get your first Pokemon.", name, JOptionPane.INFORMATION_MESSAGE);
-					return;
+			String typeString = n.getDialogue().get(0).substring(n.getDialogue().get(0).length() - 1);
+			int typeInt = Integer.parseInt(typeString);
+			String PokemonName = n.getDialogue().get(0).substring(0, n.getDialogue().get(0).length() - 1);
+			pokemonFighter = new Pokemon(currentLocation, typeInt, PokemonName);
+		}
+		if (name.contains("~")) {
+			shop = true;
+			name = name.substring(0, name.length() - 1);
+		}
+		if (n.isChest()) {
+			if (!n.isTalkedTo()) {
+				String itemName = n.getItem().getName();
+				if (n.getAmountOfItems() > 1) //add the s
+					itemName = n.getItem().getName() + "s";
+				String amount = Integer.toString(n.getAmountOfItems());
+				if(amount.equals("1"))
+					amount = "a";
+				player.addInventory(n.getItem());
+				clipTimePosition = clipMusic.getMicrosecondPosition();
+				clipMusic.stop();
+				try {
+					AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
+					getItem = AudioSystem.getClip();
+					getItem.open(inputStream);
+					getItem.start();
+				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+					e.printStackTrace();
 				}
-				nurse = true;
+				JOptionPane.showMessageDialog(null, "You got " + amount + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", name, JOptionPane.INFORMATION_MESSAGE);
+				n.setTalkedTo(true);
+				getItem.stop();
+				clipMusic.setMicrosecondPosition(clipTimePosition);
+				clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
+			} else {
+				JOptionPane.showMessageDialog(null, "You've already opened this chest", name, JOptionPane.INFORMATION_MESSAGE);
 			}
-			if (!n.isTalkedTo()) { //this will only set
-				for (int i = k; i < n.getDialogue().size(); i++) {
-					if (answer.equals("")) {
-						if (n.getDialogue(i).contains("|")) {
-							JOptionPane.showMessageDialog(null, n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
-						} else if (n.getDialogue(i).contains("/")) {
-							if (n.getDialogue(i + 1).contains("yes ") || n.getDialogue(i + 1).contains("no ")) {
-								int o = JOptionPane.showConfirmDialog(null,
-										n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1),
-										name,
-										JOptionPane.YES_NO_OPTION,
-										JOptionPane.QUESTION_MESSAGE);
-								if (o == JOptionPane.YES_OPTION) {
-									answer = "yes ";
-								} else if (o == JOptionPane.NO_OPTION)
-									answer = "no ";
-								else
-									return;
-							} else { //a question that isn't yes or no
+			return;
+		}
+		if (name.contains("Nurse")) {
+			if (player.getPokemon().size() == 0) {
+				JOptionPane.showMessageDialog(null, "Sorry, you have no Pokemon yet!", name, JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "You should see Professor Oak first to get your first Pokemon.", name, JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			nurse = true;
+		}
+		if (!n.isTalkedTo()) { //this will only set
+			for (int i = k; i < n.getDialogue().size(); i++) {
+				if (answer.equals("")) {
+					if (n.getDialogue(i).contains("|")) {
+						JOptionPane.showMessageDialog(null, n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
+					} else if (n.getDialogue(i).contains("/")) {
+						if (n.getDialogue(i + 1).contains("yes ") || n.getDialogue(i + 1).contains("no ")) {
+							int o = JOptionPane.showConfirmDialog(null,
+									n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1),
+									name,
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.QUESTION_MESSAGE);
+							if (o == JOptionPane.YES_OPTION) {
+								answer = "yes ";
+							} else if (o == JOptionPane.NO_OPTION)
+								answer = "no ";
+							else
+								return;
+						} else { //a question that isn't yes or no
+							answer = JOptionPane.showInputDialog(null,
+									n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
+							if (answer == null || (("".equals(answer)))) //if they cancel
+							{
+								return;
+							}
+							answer = answer.trim();
+							answer = answer.toLowerCase();
+							answer += " "; //make sure it's full response
+							while (findAnswerLocation(n, answer) == -1) {
 								answer = JOptionPane.showInputDialog(null,
 										n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
-								if (answer == null || (("".equals(answer)))) //if they cancel
-								{
+								if (answer == null || (("".equals(answer)))) {
 									return;
 								}
 								answer = answer.trim();
 								answer = answer.toLowerCase();
 								answer += " "; //make sure it's full response
-								while (findAnswerLocation(n, answer) == -1) {
-									answer = JOptionPane.showInputDialog(null,
-											n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), n.getName(), JOptionPane.QUESTION_MESSAGE);
-									if (answer == null || (("".equals(answer)))) {
-										return;
-									}
-									answer = answer.trim();
-									answer = answer.toLowerCase();
-									answer += " "; //make sure it's full response
-								}
 							}
-						} else if (n.getDialogue(i).contains("#")) {
-							JOptionPane.showMessageDialog(null, n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
-							JOptionPane.showMessageDialog(null, name + " has challenged you to a fight!", name, JOptionPane.INFORMATION_MESSAGE);
-							opponentPlayer = n;
-							PokemonFight(pokemonFighter, true);
-							i = n.getDialogue().size() - 1; //make sure the thing ends
-						} else if (n.getDialogue(i).contains("~")) { //shop
-							ArrayList<String> itemsPrices = new ArrayList<>();
-							String line = n.getDialogue(i).substring(n.getDialogue(i).indexOf(":") + 1);
-							for (int h = 0; h < line.length() - 1; h++) {
-								if (line.startsWith(",", h)) { //better way of saying line.substring(i, i + 1).equals(",")
-									itemsPrices.add(line.substring(0, h));
-									line = line.substring(line.indexOf(",") + 1);
-								}
-							}
-							String[] options = new String[itemsPrices.size()];
-							int[] prices = new int[itemsPrices.size()];
-							int[] effectiveness = new int[itemsPrices.size()];
-
-							for (int d = 0; d < itemsPrices.size(); d++) {
-								prices[d] = Integer.parseInt(itemsPrices.get(d).substring(0, 1));
-								int itemEnd = 0;
-								for (int q = 2; q < itemsPrices.size() - 1; q++) {
-									if (itemsPrices.get(d).startsWith(",", q))
-										itemEnd = q;
-								}
-								options[d] = itemsPrices.get(d).substring(2, itemEnd);
-								effectiveness[d] = Integer.parseInt(itemsPrices.get(d).substring(itemEnd + 1));
-							}
-							String item = (String) JOptionPane.showInputDialog(null,
-									n.getDialogue(i).substring(0, n.getDialogue().size() - 1),
-									name,
-									JOptionPane.PLAIN_MESSAGE,
-									null,
-									options,
-									options[0]);
-							if (item == null || (("".equals(item)))) { //nothing is inputted
-								return;
-							}
-							int itemLocation = -1;
-							for (int o = 0; o < options.length; o++) {
-								if (item.equals(options[o])) {
-									itemLocation = o;
-									break;
-								}
-							}
-							int o = JOptionPane.showConfirmDialog(null,
-									"Do you really want to buy a " + options[itemLocation] + " for " + prices[itemLocation] + " Pokedollars?" +
-											"\n[Current Balance: " + player.getPokemonDollar() + " Pokedollars]",
-									"Confirmation",
-									JOptionPane.YES_NO_OPTION,
-									JOptionPane.QUESTION_MESSAGE);
-							if (o == JOptionPane.YES_OPTION) {
-								if (player.getPokemonDollar() < prices[itemLocation])
-									JOptionPane.showMessageDialog(null, "You don't have enough money for this item", "Inventory", JOptionPane.ERROR_MESSAGE);
-								else {
-									player.withdrawPokemonDollar(prices[itemLocation]);
-									JOptionPane.showMessageDialog(null, "You got a " + options[itemLocation] + "!\n[Current Balance: " + player.getPokemonDollar() + " Pokedollars]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
-									JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
-									if (options[itemLocation].equals("Pokeball")) {
-										Item added = new Pokeball("Pokeball", 1);
-										player.addInventory(added);
-									} else {
-										int random = effectiveness[itemLocation] - (int) (Math.random() * 10); //determine effectiveness
-										Item added = new HealItem(options[itemLocation], 1, random);
-										player.addInventory(added);
-									}
-								}
-							} else if (o == JOptionPane.NO_OPTION) {
-								JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE);
-								return;
-							}
-						} else {
-							JOptionPane.showMessageDialog(null, n.getDialogue(i), name, JOptionPane.PLAIN_MESSAGE);
-							i = n.getDialogue().size(); //make sure the thing ends
 						}
-					} else { //now we check for an answer
-						int nextResponce = findAnswerLocation(n, answer);
-						if (nextResponce > -1) {
-							JOptionPane.showMessageDialog(null, n.getDialogue().get(nextResponce).substring(answer.length()), name, JOptionPane.PLAIN_MESSAGE); //get a rid of irregular space
-						} else {
-							JOptionPane.showMessageDialog(null, "Something went wrong...", name, JOptionPane.ERROR_MESSAGE);
-						}
+					} else if (n.getDialogue(i).contains("#")) {
+						n.setLineAt(i);
+						JOptionPane.showMessageDialog(null, n.getDialogue(i).substring(0, n.getDialogue(i).length() - 1), name, JOptionPane.PLAIN_MESSAGE);
+						JOptionPane.showMessageDialog(null, name + " has challenged you to a fight!", name, JOptionPane.INFORMATION_MESSAGE);
+						opponentPlayer = n;
+						PokemonFight(pokemonFighter, true);
 						i = n.getDialogue().size(); //make sure the thing ends
-						if (name.equals("Professor Oak")) { //getting first Pokemon!
-							clipTimePosition = clipMusic.getMicrosecondPosition();
-							clipMusic.stop();
-							try {
-								AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-								getItem = AudioSystem.getClip();
-								getItem.open(inputStream);
-								getItem.start();
-							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-								e.printStackTrace();
+					} else if (n.getDialogue(i).contains("~")) { //shop
+						ArrayList<String> itemsPrices = new ArrayList<>();
+						String line = n.getDialogue(i).substring(n.getDialogue(i).indexOf(":") + 1);
+						for (int h = 0; h < line.length() - 1; h++) {
+							if (line.startsWith(",", h)) { //better way of saying line.substring(i, i + 1).equals(",")
+								itemsPrices.add(line.substring(0, h));
+								line = line.substring(line.indexOf(",") + 1);
 							}
-							switch (answer) {
-								case "diglett ":
-									player.addPokemon(new Pokemon(currentLocation, 3, "Diglett"));
-									JOptionPane.showMessageDialog(null, "You got a Diglett!"); //get a rid of irregular space
-									JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
-									break;
-								case "litwick ":
-									player.addPokemon(new Pokemon(currentLocation, 0, "Litwick"));
-									JOptionPane.showMessageDialog(null, "You got a Litwick!"); //get a rid of irregular space
-									JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
-									break;
-								case "magikarp ":
-									player.addPokemon(new Pokemon(currentLocation, 2, "Magikarp"));
-									JOptionPane.showMessageDialog(null, "You got a Magikarp!"); //get a rid of irregular space
-									JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
-									break;
-							}
-							getItem.stop();
-							clipMusic.setMicrosecondPosition(clipTimePosition);
-							clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 						}
+						String[] options = new String[itemsPrices.size()];
+						int[] prices = new int[itemsPrices.size()];
+						int[] effectiveness = new int[itemsPrices.size()];
+
+						for (int d = 0; d < itemsPrices.size(); d++) {
+							prices[d] = Integer.parseInt(itemsPrices.get(d).substring(0, 1));
+							int itemEnd = 0;
+							for (int q = 2; q < itemsPrices.size() - 1; q++) {
+								if (itemsPrices.get(d).startsWith(",", q))
+									itemEnd = q;
+							}
+							options[d] = itemsPrices.get(d).substring(2, itemEnd);
+							effectiveness[d] = Integer.parseInt(itemsPrices.get(d).substring(itemEnd + 1));
+						}
+						String item = (String) JOptionPane.showInputDialog(null,
+								n.getDialogue(i).substring(0, n.getDialogue().size() - 1),
+								name,
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								options,
+								options[0]);
+						if (item == null || (("".equals(item)))) { //nothing is inputted
+							return;
+						}
+						int itemLocation = -1;
+						for (int o = 0; o < options.length; o++) {
+							if (item.equals(options[o])) {
+								itemLocation = o;
+								break;
+							}
+						}
+						int o = JOptionPane.showConfirmDialog(null,
+								"Do you really want to buy a " + options[itemLocation] + " for " + prices[itemLocation] + " Pokedollars?" +
+										"\n[Current Balance: " + player.getPokemonDollar() + " Pokedollars]",
+								"Confirmation",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+						if (o == JOptionPane.YES_OPTION) {
+							if (player.getPokemonDollar() < prices[itemLocation])
+								JOptionPane.showMessageDialog(null, "You don't have enough money for this item", "Inventory", JOptionPane.ERROR_MESSAGE);
+							else {
+								player.withdrawPokemonDollar(prices[itemLocation]);
+								JOptionPane.showMessageDialog(null, "You got a " + options[itemLocation] + "!\n[Current Balance: " + player.getPokemonDollar() + " Pokedollars]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+								JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+								if (options[itemLocation].equals("Pokeball")) {
+									Item added = new Pokeball("Pokeball", 1);
+									player.addInventory(added);
+								} else {
+									int random = effectiveness[itemLocation] - (int) (Math.random() * 10); //determine effectiveness
+									Item added = new HealItem(options[itemLocation], 1, random);
+									player.addInventory(added);
+								}
+							}
+						} else if (o == JOptionPane.NO_OPTION) {
+							JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE);
+							return;
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, n.getDialogue(i), name, JOptionPane.PLAIN_MESSAGE);
+						i = n.getDialogue().size(); //make sure the thing ends
+					}
+				} else { //now we check for an answer
+					int nextResponce = findAnswerLocation(n, answer);
+					if (nextResponce > -1) {
+						JOptionPane.showMessageDialog(null, n.getDialogue().get(nextResponce).substring(answer.length()), name, JOptionPane.PLAIN_MESSAGE); //get a rid of irregular space
+					} else {
+						JOptionPane.showMessageDialog(null, "Something went wrong...", name, JOptionPane.ERROR_MESSAGE);
+					}
+					i = n.getDialogue().size(); //make sure the thing ends
+					if (name.equals("Professor Oak")) { //getting first Pokemon!
+						clipTimePosition = clipMusic.getMicrosecondPosition();
+						clipMusic.stop();
+						try {
+							AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
+							getItem = AudioSystem.getClip();
+							getItem.open(inputStream);
+							getItem.start();
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+							e.printStackTrace();
+						}
+						switch (answer) {
+							case "diglett ":
+								player.addPokemon(new Pokemon(currentLocation, 3, "Diglett"));
+								JOptionPane.showMessageDialog(null, "You got a Diglett!"); //get a rid of irregular space
+								JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
+								break;
+							case "litwick ":
+								player.addPokemon(new Pokemon(currentLocation, 0, "Litwick"));
+								JOptionPane.showMessageDialog(null, "You got a Litwick!"); //get a rid of irregular space
+								JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
+								break;
+							case "magikarp ":
+								player.addPokemon(new Pokemon(currentLocation, 2, "Magikarp"));
+								JOptionPane.showMessageDialog(null, "You got a Magikarp!"); //get a rid of irregular space
+								JOptionPane.showMessageDialog(null, "[Read more about it in your Pokedex]"); //get a rid of irregular space
+								break;
+						}
+						getItem.stop();
+						clipMusic.setMicrosecondPosition(clipTimePosition);
+						clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 					}
 				}
-				if (!infiniteTalk) {
-					n.setTalkedTo(true);
-				}
-				if (shop) { //shops have an answer, so they should also give their thanks after you shop
-					JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE); //get a rid of irregular space
-				}
-				if (nurse) {
-					if (answer.equals("yes ")) {
-						String names = heal(); //just like in-game, only heals 6
-						JOptionPane.showMessageDialog(null, "Pokemon Healed:" + names); //get a rid of irregular space
-					}
-				}
-				if (gift) {
-					String itemName = n.getItem().getName();
-					if(n.getAmountOfItems() > 1)
-						itemName = n.getItem() + "s";
-					String amount = Integer.toString(n.getAmountOfItems());
-					if(amount.equals("1"))
-						amount = "a";
-					player.addInventory(n.getItem());
-					clipTimePosition = clipMusic.getMicrosecondPosition();
-					clipMusic.stop();
-					try {
-						AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
-						getItem = AudioSystem.getClip();
-						getItem.open(inputStream);
-						getItem.start();
-					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-						e.printStackTrace();
-					}
-					JOptionPane.showMessageDialog(null, "You got " + amount + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
-					JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", name, JOptionPane.INFORMATION_MESSAGE);
-					getItem.stop();
-					clipMusic.setMicrosecondPosition(clipTimePosition);
-					clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-				}
-			} else {
-				JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE);
 			}
-		}
-		public void talkToTerry () {
-			if (player.hasBadge() == -1) {
-				Item badge = new Badge("Andover Gym Badge", 1);
-				String name = "Gym Leader Terry";
-				JOptionPane.showMessageDialog(null, "Wow, you really beat Team Rocket!", name, JOptionPane.PLAIN_MESSAGE);
-				JOptionPane.showMessageDialog(null, "I'm so glad I could trust a player like you!", name, JOptionPane.PLAIN_MESSAGE);
-				JOptionPane.showMessageDialog(null, "For your great work, I'm going to give you this...", name, JOptionPane.PLAIN_MESSAGE);
-				player.addInventory(badge);
-				JOptionPane.showMessageDialog(null, "You got the Andover Gym Badge!", "Inventory", JOptionPane.INFORMATION_MESSAGE);
-				JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
-				JOptionPane.showMessageDialog(null, "Thank you for doing this!", name, JOptionPane.PLAIN_MESSAGE);
-				JOptionPane.showMessageDialog(null, "Thanks for playing! - Kenny", "Pokemon", JOptionPane.PLAIN_MESSAGE);
+			if (!infiniteTalk) {
+				n.setTalkedTo(true);
 			}
-		}
-		public String heal() {
-			String[] PokemonNames;
-			String names = "";
-			if (player.getPokemon().size() > 5) {
-				PokemonNames = new String[player.getPokemon().size()];
-				for (int i = 0; i < 6; i++) {
-					player.getPokemon(i).reset();
-					PokemonNames[i] = player.getPokemon(i).getName();
-				}
-			} else {
-				PokemonNames = new String[player.getPokemon().size()];
-				for (int i = 0; i < player.getPokemon().size(); i++) {
-					player.getPokemon(i).reset();
-					PokemonNames[i] = player.getPokemon(i).getName();
+			if (shop) { //shops have an answer, so they should also give their thanks after you shop
+				JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE); //get a rid of irregular space
+			}
+			if (nurse) {
+				if (answer.equals("yes ")) {
+					String names = heal(); //just like in-game, only heals 6
+					JOptionPane.showMessageDialog(null, "Pokemon Healed:" + names); //get a rid of irregular space
 				}
 			}
-			for (String n : PokemonNames) {
-				names += " " + n;
+			if (gift) {
+				String itemName = n.getItem().getName();
+				if(n.getAmountOfItems() > 1)
+					itemName = n.getItem() + "s";
+				String amount = Integer.toString(n.getAmountOfItems());
+				if(amount.equals("1"))
+					amount = "a";
+				player.addInventory(n.getItem());
+				clipTimePosition = clipMusic.getMicrosecondPosition();
+				clipMusic.stop();
+				try {
+					AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("GetItem.wav"));
+					getItem = AudioSystem.getClip();
+					getItem.open(inputStream);
+					getItem.start();
+				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+					e.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(null, "You got " + amount + " " + itemName + "!", name, JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", name, JOptionPane.INFORMATION_MESSAGE);
+				getItem.stop();
+				clipMusic.setMicrosecondPosition(clipTimePosition);
+				clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 			}
-			return names;
+		} else {
+			JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE);
 		}
-		public int findAnswerLocation (Things n, String answer) {
-			for (int k = 0; k < n.getDialogue().size(); k++) {
-				if (n.getDialogue().get(k).contains(answer))
-					return k;
+	}
+	public void talkToTerry () {
+		String name = "Gym Leader Terry";
+		if (player.hasBadge() == -1) {
+			Item badge = new Badge("Andover Gym Badge", 1);
+			JOptionPane.showMessageDialog(null, "Wow, you really beat Team Rocket!", name, JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(null, "I'm so glad I could trust a player like you!", name, JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(null, "For your great work, I'm going to give you this...", name, JOptionPane.PLAIN_MESSAGE);
+			player.addInventory(badge);
+			JOptionPane.showMessageDialog(null, "You got the Andover Gym Badge!", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "[Read more about it in your inventory]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Thanks for playing! - Kenny", "Pokemon", JOptionPane.PLAIN_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, "Thank you for doing this!", name, JOptionPane.PLAIN_MESSAGE);
+		}
+	}
+	public String heal() {
+		String[] PokemonNames;
+		String names = "";
+		if (player.getPokemon().size() > 5) {
+			PokemonNames = new String[player.getPokemon().size()];
+			for (int i = 0; i < 6; i++) {
+				player.getPokemon(i).reset();
+				PokemonNames[i] = player.getPokemon(i).getName();
 			}
-			return -1;
-		}
-		public void updateHotBar (HotBar hotbar){
-			this.hotbar = hotbar;
-		}
-		public Scanner readText (String l, Scanner r){
-			try {
-				r = new Scanner(new File(l + ".txt"));
-			} catch (FileNotFoundException e) {
-				System.out.println(l + ".txt does not exist");
+		} else {
+			PokemonNames = new String[player.getPokemon().size()];
+			for (int i = 0; i < player.getPokemon().size(); i++) {
+				player.getPokemon(i).reset();
+				PokemonNames[i] = player.getPokemon(i).getName();
 			}
-			return r;
 		}
-		public void setBoard (String location){
+		for (String n : PokemonNames) {
+			names += " " + n;
+		}
+		return names;
+	}
+	public int findAnswerLocation (Things n, String answer) {
+		for (int k = 0; k < n.getDialogue().size(); k++) {
+			if (n.getDialogue().get(k).contains(answer))
+				return k;
+		}
+		return -1;
+	}
+	public void updateHotBar (HotBar hotbar){
+		this.hotbar = hotbar;
+	}
+	public Scanner readText (String l, Scanner r){
+		try {
+			r = new Scanner(new File(l + ".txt"));
+		} catch (FileNotFoundException e) {
+			System.out.println(l + ".txt does not exist");
+		}
+		return r;
+	}
+	public void setBoard (String location, boolean start) {
+		if (player.getPokemon().size() == 0 && location.equals("C")) {
+			JOptionPane.showMessageDialog(null, "You should probably get a pokemon from Professor Oak before continuing", "Pokemon", JOptionPane.PLAIN_MESSAGE);
+			return;
+		}
+		if(!start) { //this makes it easier to update board
+			Things[][] updateBoard = new Things[20][20];
+			for (int i = 0; i < updateBoard.length; i++) {
+				for (int c = 0; c < updateBoard[0].length; c++) {
+					updateBoard[i][c] = currentBoard[i][c];
+				}
+			}
+			usedBoards.set(currentLocation.compareTo("A"), updateBoard); //update the last board they were on and creates a new one
+		}
+		Things[][] newBoard = new Things[20][20];
+		if(usedBoards.get(location.compareTo("A")) == null) {
 			Scanner reader = null;
 			reader = readText(location, reader);
-			for (int i = 0; i < currentBoard.length; i++) { //draw board
-				for (int c = 0; c < currentBoard[0].length; c++) {
+			for (int i = 0; i < newBoard.length; i++) { //draw board
+				for (int c = 0; c < newBoard[0].length; c++) {
 					int gridSpace = -1;
 					String gridSpace2 = "";
 					try { //regular drawing, not a connection
 						gridSpace = reader.nextInt();
-						System.out.println(gridSpace);
 					} catch (Exception e) { //leads to another path
 						gridSpace2 = reader.next();
-						System.out.println(gridSpace2);
 					}
 					if (gridSpace > -1) { //Checking if the next is int or string
 						switch (gridSpace) {
@@ -767,12 +851,12 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									message += next + " ";
 								}
 								message = message.substring(0, message.length() - 2);
-								currentBoard[i][c] = new Things(gridSpace,
+								newBoard[i][c] = new Things(gridSpace,
 										message,
-										i * Width / currentBoard.length,
-										c * Height / currentBoard[0].length,
-										Width / currentBoard[0].length,
-										Height / currentBoard.length);
+										i * Width / newBoard.length,
+										c * Height / newBoard[0].length,
+										Width / newBoard[0].length,
+										Height / newBoard.length);
 								break;
 							case 7: //person interaction
 								ArrayList<String> dialogue = new ArrayList<>();
@@ -790,51 +874,73 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								String name = dialogue.get(0);
 								dialogue.remove(0); //the name will not be apart of the message
 
-								currentBoard[i][c] = new Things(name,
+								newBoard[i][c] = new Things(name,
 										dialogue,
-										i * Width / currentBoard.length,
-										c * Height / currentBoard[0].length,
-										Width / currentBoard[0].length,
-										Height / currentBoard.length);
+										i * Width / newBoard.length,
+										c * Height / newBoard[0].length,
+										Width / newBoard[0].length,
+										Height / newBoard.length);
 								break;
 							case 15:
-								if(currentLocation.equals("K") || currentLocation.equals("H")) { //only k has a rocket door
-									currentBoard[i][c] = new Things(true,
-											i * Width / currentBoard.length,
-											c * Height / currentBoard[0].length,
-											Width / currentBoard[0].length,
-											Height / currentBoard.length);
+								if (newBoard.equals("K")) { //only k has a rocket door
+									newBoard[i][c] = new Things(true,
+											i * Width / newBoard.length,
+											c * Height / newBoard[0].length,
+											Width / newBoard[0].length,
+											Height / newBoard.length);
 								} else {
-									currentBoard[i][c] = new Things(false,
-											i * Width / currentBoard.length,
-											c * Height / currentBoard[0].length,
-											Width / currentBoard[0].length,
-											Height / currentBoard.length);
+									newBoard[i][c] = new Things(false,
+											i * Width / newBoard.length,
+											c * Height / newBoard[0].length,
+											Width / newBoard[0].length,
+											Height / newBoard.length);
 								}
 								break;
 							default:
-								currentBoard[i][c] = new Things(gridSpace,
-										i * Width / currentBoard.length,
-										c * Height / currentBoard[0].length,
-										Width / currentBoard[0].length,
-										Height / currentBoard.length);
+								newBoard[i][c] = new Things(gridSpace,
+										i * Width / newBoard.length,
+											c * Height / newBoard[0].length,
+										Width / newBoard[0].length,
+										Height / newBoard.length);
 								break;
 						}
 					} else {
-						if(currentLocation.equals(gridSpace2))
-							player.setLocation(i * Width / currentBoard.length + Width / (4 * currentBoard[0].length), c * Height / currentBoard[0].length + Width / (4 * currentBoard[0].length));
-						currentBoard[i][c] = new Things(gridSpace2,
-								i * Width / currentBoard.length,
-								c * Height / currentBoard[0].length,
-								Width / currentBoard[0].length,
-								Height / currentBoard.length);
+						newBoard[i][c] = new Things(gridSpace2,
+						i * Width / newBoard.length,
+								c * Height / newBoard[0].length,
+						Width / newBoard[0].length,
+						Height / newBoard.length);
 					}
 				}
 			}
 			reader.close();
-			currentLocation = location;
+			usedBoards.set(location.compareTo("A"), newBoard);
+			currentBoard = newBoard;
+		} else {
+			currentBoard = usedBoards.get(location.compareTo("A")); //new board
 		}
-		public boolean isOverlapping (Rectangle r1, Rectangle r2){
-			return r1.getBounds().intersects(r2.getBounds());
+		if(!start) { //only will not run in beginning
+			for (int i = 0; i < newBoard.length; i++) { //draw board
+				for (int c = 0; c < newBoard[0].length; c++) {
+					if (currentBoard[i][c].getConnectingLocation().equals(currentLocation)) {
+						player.setLocation(i * Width / newBoard.length + Width / (4 * newBoard[0].length),
+								c * Height / newBoard[0].length + Width / (4 * newBoard[0].length));
+					}
+				}
+			}
+		}
+		currentLocation = location;
+	}
+	public boolean isOverlapping (Rectangle r1, Rectangle r2){
+		return r1.getBounds().intersects(r2.getBounds());
+	}
+	public void resetStage() {
+		if(currentLocation.equals("L") || currentLocation.equals("J") || currentLocation.equals("I")) { //under ground
+			sky = new Color(105, 105, 105);
+			stage = new Color(128,128,128);
+		} else {
+			sky = new Color(102, 178, 255);
+			stage = Color.GREEN.darker();
 		}
 	}
+}
