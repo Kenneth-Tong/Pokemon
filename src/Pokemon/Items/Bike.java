@@ -8,7 +8,7 @@ public class Bike extends Item{
         super(name, x);
         super.setDescription("A bike used to travel faster!");
         if(name.contains("Super"))
-         superBike = true;
+            superBike = true;
     }
     public void setBike(boolean n, Player player) {
         if(!superBike) {

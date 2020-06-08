@@ -173,9 +173,7 @@ public class Pokemon {
 		return returning;
 	}
 	public boolean hasFainted() {
-		if(health < 1)
-			return true;
-		return false;
+		return health < 1;
 	}
 	public void setMoves() {
 		ArrayList<PokemonMove> attackList = new ArrayList<>();
@@ -228,7 +226,7 @@ public class Pokemon {
 			int max = (int) (Math.random() * 5) + 8 * damageCheck;
 			int min = (int) (Math.random() * 5) + 5 * damageCheck;
 			pokemonMoves[0] = new Heal(healList[(int) (Math.random() * (healList.length - 1))], type, min, max, movePoint);
-		} /*else if((int) (Math.random() * 5) == 2) { */ else {
+		} else if((int) (Math.random() * 5) == 2) {
 			int movePoint = (int) (Math.random() * 4) + 3;
 			int max = (int) (Math.random() * 2) + 5 * damageCheck;
 			int min = (int) (Math.random() * 2) + 3 * damageCheck;
@@ -238,7 +236,7 @@ public class Pokemon {
 		}
 
 		String[] stageList = new String[] {"Rain Dance", "Heat Wave", "Rock Slide", "Forest Growth"};
-//		if((int) (Math.random() * 6) == 3) {
+		if((int) (Math.random() * 6) == 3) {
 			int min = (int) (Math.random() * 2) + 3 * damageCheck + 1;
 			int max = (int) (Math.random() * 2) + 2 * damageCheck;
 			int movePoint = (int) (Math.random() * 2) + 3;
@@ -258,7 +256,7 @@ public class Pokemon {
 					break;
 			}
 			pokemonMoves[3] = new Stage(name, type, min, max, movePoint);
-//		}
+		}
 	}
 	public boolean contains(int[] array, int x)
 	{

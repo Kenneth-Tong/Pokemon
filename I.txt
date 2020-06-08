@@ -1,11 +1,11 @@
-2 2 2 2 J 2 2 2 2 2 2 2 2 2 2 14 4 4 4 4
-2 2 2 14 4 4 4 4 2 2 2 2 2 2 4 14 4 7 Rocket Team Goon#> Merril2> Oh man, I can't wait till I show this Pokemon to the leader...|> Hey wait! You're not supposed to be here!|> I thought I destroyed the bridge! How did you get across??|> Well that doesn't matter right now, now that you've seen me you're going to have to fight me!#> Ok, fine I'll leave the Onyx alone. I was so close to capturing that Onyx until you ruined it.>< 4 4
+2 2 2 2 2 J 2 2 2 2 2 2 2 2 2 14 14 14 14 14
+2 2 2 14 4 4 6 Danger - Do not enter> 4 2 2 2 2 2 2 14 14 14 7 Rocket Team Goon#> Merril2> Oh man, I can't wait till I show this Pokemon to the leader...|> Hey wait! You're not supposed to be here!|> I thought I destroyed the bridge! How did you get across??|> Well that doesn't matter right now, now that you've seen me you're going to have to fight me!#> Ok, fine I'll leave the Onyx alone. I was so close to capturing that Onyx until you ruined it.>< 14 14
 2 2 14 14 4 4 4 4 2 2 2 2 2 14 14 14 14 14 14 14
 2 2 14 14 4 4 4 4 4 2 2 2 2 14 14 14 14 14 14 14
 2 14 14 14 14 4 4 4 4 4 2 2 14 14 14 14 14 14 14 2
 14 14 14 14 14 2 4 4 4 4 2 2 14 14 14 14 2 2 2 2
-14 14 14 14 14 2 2 4 4 4 4 4 14 14 2 2 2 2 2 2
-14 14 14 14 14 2 2 4 4 4 4 4 4 2 2 2 2 2 2 2
+14 14 14 14 14 2 2 4 4 4 4 4 4 14 14 2 2 2 2 2
+14 14 14 14 14 2 2 4 4 4 4 4 4 4 4 2 2 2 2 2
 14 14 14 14 14 2 3 3 3 3 3 3 9 3 3 3 3 3 3 3
 14 12 Key> 14 14 2 2 3 3 3 3 3 3 9 3 3 3 3 3 3 3
 14 14 14 2 2 2 3 3 4 4 4 4 4 4 4 4 4 4 4 4

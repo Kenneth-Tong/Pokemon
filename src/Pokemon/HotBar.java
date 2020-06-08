@@ -118,6 +118,7 @@ public class HotBar extends JPanel implements ActionListener {
 		JButton btn = (JButton) e.getSource();
 
 		if(!GuiMap.pokemonFight) { //only run when not fighting
+			player.stopPlayerMovement();
 			if (btn == key) {
 				showKey();
 			}
@@ -440,11 +441,11 @@ public class HotBar extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
 				}
 				return;
-			} else if (player.getInventory(inventoryLocation, false) instanceof Badge) {
+			} else if (player.getInventory(inventoryLocation, false) instanceof Badge || player.getInventory(inventoryLocation, false) instanceof Key) {
 				if(GuiMap.pokemonFight)
 					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
 				else
-					JOptionPane.showMessageDialog(null, player.getInventory(inventoryLocation, false).getDescription(), "Inventory", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, player.getInventory(inventoryLocation, false).getDescription(), "Inventory", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 			int answer = JOptionPane.showConfirmDialog(null,
@@ -594,13 +595,6 @@ public class HotBar extends JPanel implements ActionListener {
 		String[] moves = new String[4];
 		for(int i = 0; i < 4; i++) {
 			moves[i] = player.getPokemon(0).getPokemonMoves(i).getName();
-		}
-		return moves;
-	}
-	public PokemonMove[] getMoves() {
-		PokemonMove[] moves = new PokemonMove[4];
-		for(int i = 0; i < 4; i++) {
-			moves[i] = getPokemon()[0].getPokemonMoves(i);
 		}
 		return moves;
 	}

@@ -1,20 +1,20 @@
-2 2 2 2 2 2 2 2 2 12 2 Hard Candy> 2 2 2 2 2 2 2 2 2 2
+2 2 2 2 2 2 2 2 2 12 Hard Candy> 2 2 2 2 2 2 2 2 2 2
 2 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 2 2
 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 2
-4 4 4 4 4 4 4 13 13 13 13 13 4 4 4 4 4 4 4 4
-4 4 4 4 4 4 13 4 4 4 4 4 13 4 4 4 4 4 4 4
-4 4 4 4 4 13 4 4 4 4 4 4 4 13 4 4 4 4 4 4
-4 4 4 4 13 4 4 4 13 13 13 4 4 4 13 4 4 4 4 4
-4 4 4 13 4 4 4 13 4 4 4 13 4 4 4 13 4 4 4 4
-13 13 13 13 13 13 13 4 4 7 Team Rocket Leader Jordan#;> Geko1> I knew that you trainers would try to stop us from taking your precious Pokemon!|> I'll let you know I have the key to the gym, but you're going to have to fight for it.|> However, you are no match for a trainer like me. You lack skill and power.|> Only true Pokemon masters hold power such as mine.|> So I'll give you a deal. You 'surrender' or you 'fight' me. Which one?/> surrender Ahahaha, you really thought that I'd let you go? No, for trying to stop us you shall be punished!#> fight I knew you were going to say that. So come on, let's duel!#> I was going easy on you, just take the key and leave. But know that you'll never stop us!>< 4 13 13 13 13 13 13 13 13
-4 4 4 13 4 4 4 13 4 4 4 13 4 4 4 13 4 4 4 4
-4 4 4 4 13 4 4 4 13 13 13 4 4 4 13 4 4 4 4 4
-4 4 4 4 4 13 4 4 4 4 4 4 4 13 4 4 4 4 4 4
-4 4 4 4 4 4 13 4 4 4 4 4 13 4 4 4 4 4 4 4
-4 4 4 4 4 4 4 13 13 13 13 13 4 4 4 4 4 4 4 4
-4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 2 2 2
-2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 2 2 2 2
-2 2 4 4 4 4 4 4 4 4 4 4 4 4 2 2 2 2 2 2
-2 2 4 4 4 4 4 4 4 4 4 4 2 2 2 2 2 2 2 2
-2 2 2 4 4 4 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-2 2 2 2 I 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+4 4 4 4 4 4 4 8 8 4 8 8 4 4 4 4 4 4 4 4
+4 4 4 4 4 4 8 8 8 4 8 8 8 4 4 4 4 4 4 4
+4 4 4 4 4 8 8 8 8 4 8 8 8 8 4 4 4 4 4 4
+4 4 4 4 8 8 8 8 10 4 10 8 8 8 8 4 4 4 4 4
+4 4 4 8 8 8 8 10 4 4 4 10 8 8 8 8 4 4 4 4
+10 10 10 10 10 10 10 10 4 7 Team Rocket Leader Jordan#;> Geko1> Team Rocket Key> I knew that you trainers would try to stop us from taking your precious Pokemon!|> I'll let you know I have the key to the gym, but you're going to have to fight for it.|> However, you are no match for a trainer like me. You lack skill and power.|> Only true Pokemon masters hold power such as mine.|> So I'll give you a deal. You 'surrender' or you 'fight' me. Which one?/> surrender You really thought that I'd let you go? No, for trying to stop us I shall beat you in a duel!#> fight I knew you were going to say that. So come on, let's duel!#> I was going easy on you, just take the key and leave. But know that you'll never stop us!>< 4 10 10 10 10 10 10 10 10 10
+4 4 4 13 13 13 13 10 4 4 4 10 13 13 13 13 4 4 4 4
+4 4 4 4 13 13 13 13 10 4 10 13 13 13 13 4 4 4 4 4
+4 4 4 4 4 13 13 13 13 4 13 13 13 13 4 4 4 4 4 4
+4 4 4 4 4 4 13 13 13 4 13 13 13 4 4 4 4 4 4 4
+2 4 4 4 4 4 4 13 13 4 13 13 4 4 4 4 4 4 4 4
+2 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 2 2 2
+2 2 2 4 4 4 4 4 4 4 4 4 4 4 4 4 2 2 2 2
+2 2 2 2 4 4 4 4 4 4 4 4 4 4 2 2 2 2 2 2
+2 2 2 2 2 2 2 6 Rockstone Cove> 4 4 4 4 2 2 2 2 2 2 2 2
+2 2 2 2 2 2 2 2 2 4 4 2 2 2 2 2 2 2 2 2
+2 2 2 2 2 2 2 2 2 I 2 2 2 2 2 2 2 2 2 2

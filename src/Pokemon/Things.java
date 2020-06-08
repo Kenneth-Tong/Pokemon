@@ -85,7 +85,7 @@ public class Things {
 				break;
 			case 11:
 				color = new Color(222, 184, 135);
-				passable = false;
+				passable = true;
 				break;
 			case 13:
 				color = Color.WHITE;
@@ -154,23 +154,36 @@ public class Things {
 		name = n;
 		dialogue = m;
 		if(name.contains(";")) { //give item only
-				String itemName = "";
-				if(locationItem(m.get(0)) > -1) {
+			String itemName = "";
+			if (name.contains("#")) {
+				if (locationItem(m.get(1)) > -1) {
+					itemName = m.get(1).substring(locationItem(m.get(1))); //get item name
+					amountOfItems = Integer.parseInt(m.get(1).substring(0, locationItem(m.get(1)) - 1)); //get item
+				} else {
+					itemName = m.get(0);
+					amountOfItems = 1;
+				}
+			} else {
+				if (locationItem(m.get(0)) > -1) {
 					itemName = m.get(0).substring(locationItem(m.get(0))); //get item name
 					amountOfItems = Integer.parseInt(m.get(0).substring(0, locationItem(m.get(0)) - 1)); //get item
 				} else {
 					itemName = m.get(0);
 					amountOfItems = 1;
 				}
-				if(itemName.contains("Pokeball")) {
-					item = new Pokeball("Pokeball", amountOfItems);
-				} else if(itemName.contains("Key")) {
-					item = new Key(itemName, amountOfItems, true); //jordan is only person with key
-				} else if(itemName.contains("Bike")) {
-					item = new Bike("Bike", amountOfItems);
-				} else {
-					item = new HealItem(itemName, amountOfItems);
-				}
+			}
+			if (itemName.contains("Pokeball")) {
+				item = new Pokeball("Pokeball", amountOfItems);
+			} else if (itemName.contains("Key")) {
+				if (GuiMap.currentLocation.equals("J"))
+					item = new Key(itemName, amountOfItems, true);
+				else
+					item = new Key(itemName, amountOfItems, false);
+			} else if (itemName.contains("Bike")) {
+				item = new Bike("Bike", amountOfItems);
+			} else {
+				item = new HealItem(itemName, amountOfItems);
+			}
 		}
 		if(name.contains("#"))
 			lineAt = 1;

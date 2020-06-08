@@ -23,78 +23,96 @@ public class Player {
 		lastX = posX;
 		lastY = posY;
 	}
+
 	public void updateHitBox() {
 		hitBox = new Rectangle(posX, posY, Height, Width);
 	}
+
 	public void moveX() {
 		lastX = posX;
 		posX += moveX;
 		updateHitBox();
 	}
+
 	public void setLocation(int x, int y) {
 		posX = x;
 		posY = y;
 	}
+
 	public void moveY() {
 		lastY = posY;
 		posY += moveY;
 		updateHitBox();
 	}
+
 	public void resetX() {
 		posX = lastX;
 		updateHitBox();
 	}
+
 	public void resetY() {
 		posY = lastY;
 		updateHitBox();
 	}
+
 	public Rectangle getHitBox() {
 		return hitBox;
 	}
+
 	public void setMoveX(int moveX) {
 		this.moveX = moveX;
 	}
+
 	public void setMoveY(int moveY) {
 		this.moveY = moveY;
 	}
+
 	public int getPosX() {
 		return posX;
 	}
+
 	public int getPosY() {
 		return posY;
 	}
+
 	public Item getInventory(int i, boolean take) {
 		Item returnItem = inventory.get(i);
-		if(take) {
+		if (take) {
 			inventory.get(i).useItem();
-			if(inventory.get(i).getAmount() < 1)
+			if (inventory.get(i).getAmount() < 1)
 				inventory.remove(i);
 		}
 		return returnItem;
 	}
+
 	public Item[] getInventory() {
 		Item[] list = new Item[inventory.size()];
 		int i = 0;
-		for(Item n: inventory) {
+		for (Item n : inventory) {
 			list[i] = n;
 			i++;
 		}
 		return list;
 	}
+
 	public void addInventory(Item a) {
-		for(Item n: inventory) {
-			if(a.getName().equals(n.getName())) {
+		for (Item n : inventory) {
+			if (a.getName().equals(n.getName())) {
 				n.addItem(a.getAmount()); //combined amount of items
 				return;
 			}
 		}
 		inventory.add(a);
 	}
+
 	public void setIsOnSuperBike(boolean n) {
-		if(n)
+		if (n) {
 			velocity = 7;
-		else
+			isSuperBike = true;
+		} else {
 			velocity = 3;
+			isSuperBike = false;
+		}
 	}
 
 	public String getName() {
@@ -153,6 +171,11 @@ public class Player {
 		return isOnBike;
 	}
 
+	public void stopPlayerMovement() {
+		moveX = 0;
+		moveY = 0;
+	}
+
 	public boolean getIsOnSuperBike() { return isSuperBike; }
 
 	public int getVelocity() {
@@ -165,10 +188,14 @@ public class Player {
 		pokemonDollar -= x;
 	}
 	public void setIsOnBike(boolean n) {
-		if(n)
+		if(n) {
 			velocity = 5;
-		else
+			isOnBike = true;
+		}
+		else {
 			velocity = 3;
+			isOnBike = false;
+		}
 	}
 	public void switchPokemon(Pokemon a, Pokemon b) {
 		Pokemon changedWith = a;

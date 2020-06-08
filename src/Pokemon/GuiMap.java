@@ -1,11 +1,7 @@
 package Pokemon;
 
-import Pokemon.Items.Badge;
-import Pokemon.Items.HealItem;
-import Pokemon.Items.Item;
-import Pokemon.Items.Pokeball;
+import Pokemon.Items.*;
 import Pokemon.PokemonClass.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +25,7 @@ import javax.swing.*;
  */
 
 public class GuiMap extends JPanel implements ActionListener, KeyListener {
-	private static String currentLocation;
+	public static String currentLocation;
 	private final Player player;
 	public static Clip clipMusic, clipFight, getItem;
 	public static long clipTimePosition;
@@ -48,10 +44,11 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		Height = h;
 		Width = w;;
 		player = p;
-		player.setLocation(10, 570);
+		//player.setLocation(10, 570);
+		player.setLocation(200, 300);
 		for(int i = 0; i < 13; i++) //preset board so all values are null
 			usedBoards.add(null);
-		setBoard("B", true); //starting area
+		setBoard("L", true); //starting area
 		Timer timer = new Timer(25, this);
 		timer.start();
 		super.setLayout(null);
@@ -98,11 +95,11 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			g.setColor(appear.getColor());
 			g.fillRect(Width - 200, Height / 3 - 50, 100, 100);
 
-			JLabel opponentName = new JLabel(appear.getName());
-			opponentName.setFont(new Font("Ariel", Font.BOLD, 15));
-			opponentName.setForeground(appear.getColor());
-			super.add(opponentName);
-			opponentName.setLocation(Width - 100 - appear.getName().length() / 2, Height / 3 + 100);
+//			JLabel opponentName = new JLabel(appear.getName());
+//			opponentName.setFont(new Font("Ariel", Font.BOLD, 15));
+//			opponentName.setForeground(appear.getColor());
+//			super.add(opponentName);
+//			opponentName.setLocation(Width - 100 - appear.getName().length() / 2, Height / 3 + 100);
 
 			g.setColor(Color.BLACK);
 			g.drawRect(Width - 200, Height / 3 - 75, 100, 15); //health boarder
@@ -112,19 +109,19 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				g.fillRect(Width - 199, Height / 3 - 74, 100 * appear.getHealth() / appear.getMaxHealth() - 1, 14); //actual health
 			}
 
-			JLabel opponentHealth = new JLabel(Integer.toString(appear.getHealth()));
-			opponentHealth.setFont(new Font("Ariel", Font.BOLD, 15));
-			opponentName.setForeground(Color.WHITE);
-			super.add(opponentHealth);
-			opponentHealth.setLocation(Width - 100 - Integer.toString(appear.getHealth()).length() / 2, Height / 3 - 74);
+//			JLabel opponentHealth = new JLabel(Integer.toString(appear.getHealth()));
+//			opponentHealth.setFont(new Font("Ariel", Font.BOLD, 15));
+//			opponentName.setForeground(Color.WHITE);
+//			super.add(opponentHealth);
+//			opponentHealth.setLocation(Width - 100 - Integer.toString(appear.getHealth()).length() / 2, Height / 3 - 74);
 
 			g.setColor(player.getPokemon().get(0).getColor());
 			g.fillRect(50, Height * 2 / 3 - 50, 200, 200);
 
-			JLabel PokemonName = new JLabel(player.getPokemon().get(0).getName());
-			super.add(PokemonName);
-			opponentName.setForeground(player.getPokemon().get(0).getColor());
-			PokemonName.setLocation(150 - player.getPokemon().get(0).getName().length() / 2, Height * 2/ 3 + 250);
+//			JLabel PokemonName = new JLabel(player.getPokemon().get(0).getName());
+//			super.add(PokemonName);
+//			opponentName.setForeground(player.getPokemon().get(0).getColor());
+//			PokemonName.setLocation(150 - player.getPokemon().get(0).getName().length() / 2, Height * 2/ 3 + 250);
 
 			g.setColor(Color.BLACK);
 			g.drawRect(50, Height * 2 / 3 - 85, 200, 20);
@@ -133,11 +130,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				g.setColor(Color.RED.darker());
 				g.fillRect(51, Height * 2 / 3 - 84, 200 * player.getPokemon().get(0).getHealth() / player.getPokemon().get(0).getMaxHealth() - 1, 19);
 			}
-			JLabel PokemonHealth = new JLabel(Integer.toString(player.getPokemon().get(0).getHealth()));
-			PokemonHealth.setFont(new Font("Ariel", Font.BOLD, 15));
-			PokemonHealth.setForeground(Color.WHITE);
-			super.add(PokemonHealth);
-			PokemonHealth.setLocation(175 - Integer.toString(player.getPokemon().get(0).getHealth()).length() / 2, Height * 2 / 3 - 85);
+//			JLabel PokemonHealth = new JLabel(Integer.toString(player.getPokemon().get(0).getHealth()));
+//			PokemonHealth.setFont(new Font("Ariel", Font.BOLD, 15));
+//			PokemonHealth.setForeground(Color.WHITE);
+//			super.add(PokemonHealth);
 		}
 	}
 
@@ -157,11 +153,11 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 					for (int c = 0; c < currentBoard[0].length; c++) {
 						if (!currentBoard[i][c].getConnectingLocation().equals("") && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							setBoard(currentBoard[i][c].getConnectingLocation(), false);
-						} else if (currentBoard[i][c].isSign() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox()))
+						} else if (currentBoard[i][c].isSign() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							readMessage(currentBoard[i][c]);
-						else if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {//person interact
-							player.setMoveY(0);
-							player.setMoveX(0);
+							player.stopPlayerMovement();
+						} else if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {//person interact
+							player.stopPlayerMovement();
 							if (gameFinished && currentBoard[i][c].getName().contains("Terry")) {
 								talkToTerry(); //you're done!
 							} else {
@@ -172,6 +168,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								JOptionPane.showMessageDialog(null, "You do not have the key to the door", "Locked", JOptionPane.ERROR_MESSAGE);
 							}
 							else if (player.hasKey(false) > -1 && !currentBoard[i][c].isRocket()) {
+								player.stopPlayerMovement();
 								int answer = JOptionPane.showConfirmDialog(null,
 										"Do you use a key to unlock the door?",
 										"Door",
@@ -194,8 +191,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									getItem.stop();
 									clipMusic.setMicrosecondPosition(clipTimePosition);
 									clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-									setBoard(currentLocation, false);
-									usedBoards.set(currentLocation.compareTo("A"), currentBoard);
+									updateBoard();
 								}
 							} else if (player.hasKey(true) > -1 && currentBoard[i][c].isRocket()) {
 								int answer = JOptionPane.showConfirmDialog(null,
@@ -220,7 +216,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 									getItem.stop();
 									clipMusic.setMicrosecondPosition(clipTimePosition);
 									clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
-									setBoard(currentLocation, false);
+									updateBoard();
 								}
 							}
 						}
@@ -397,6 +393,15 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				player.setColor(Color.BLACK);
 				break;
 		}
+		if(player.getName().equals("KennY")) {
+			player.addPokemon(new Pokemon("Z", 2));
+			player.addInventory(new Key("Key", 1, false));
+			player.addInventory(new Key("Key", 1, false));
+			player.addInventory(new Key("Key", 1, false));
+			player.addInventory(new Key("Key", 1, false));
+			player.addInventory(new Key("Key", 1, false));
+			player.addInventory(new Key("Team Rocket Key", 1, true));
+		}
 		JOptionPane.showMessageDialog(null,
 				"You're all set, " + answer + ", welcome and explore your new world!");
 	}
@@ -424,6 +429,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				JOptionPane.showMessageDialog(null, "Pokemon Healed:" + PokemonHealed, "", JOptionPane.INFORMATION_MESSAGE);
 				getThingSimilar(opponentPlayer).setLineAt(1);
 				getThingSimilar(opponentPlayer).setTalkedTo(false);
+				currentLocation = "A";
 				opponentPlayer = null; //reset progress
 				appear = null;
 				hotbar.reset();
@@ -446,7 +452,6 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		}
 		repaint();
 	}
-
 	public void createPokemon () {
 		if (!pokemonFight) {
 			if (!currentLocation.equals("I") && !currentLocation.equals("J")) {
@@ -496,10 +501,12 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		}
 	}
 	public void talkToPerson (Things n){ //talking to a person
-		boolean infiniteTalk = false, gift = false, nurse = false, shop = false;
+		boolean infiniteTalk = false, gift = false, nurse = false;
 		String answer = "", name = n.getName();
 		int k = 0; //starting element
 		if (name.contains("!")) {
+			if(name.contains("@"))
+				name = name.substring(0, name.length() - 1);
 			infiniteTalk = true;
 			name = name.substring(0, n.getName().length() - 1);
 		}
@@ -519,10 +526,6 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			int typeInt = Integer.parseInt(typeString);
 			String PokemonName = n.getDialogue().get(0).substring(0, n.getDialogue().get(0).length() - 1);
 			pokemonFighter = new Pokemon(currentLocation, typeInt, PokemonName);
-		}
-		if (name.contains("~")) {
-			shop = true;
-			name = name.substring(0, name.length() - 1);
 		}
 		if (n.isChest()) {
 			if (!n.isTalkedTo()) {
@@ -608,31 +611,29 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 						opponentPlayer = n;
 						PokemonFight(pokemonFighter, true);
 						i = n.getDialogue().size(); //make sure the thing ends
-					} else if (n.getDialogue(i).contains("~")) { //shop
-						ArrayList<String> itemsPrices = new ArrayList<>();
-						String line = n.getDialogue(i).substring(n.getDialogue(i).indexOf(":") + 1);
-						for (int h = 0; h < line.length() - 1; h++) {
-							if (line.startsWith(",", h)) { //better way of saying line.substring(i, i + 1).equals(",")
-								itemsPrices.add(line.substring(0, h));
-								line = line.substring(line.indexOf(",") + 1);
+					} else if (n.getDialogue(i).contains(":")) { //shop
+						ArrayList<String> itemNameAndPrice = new ArrayList<>();
+						String line = n.getDialogue(i).substring(n.getDialogue(i).indexOf(":") + 2);
+						for(int h = 0; h < line.length() - 1; h++) {
+							if (line.startsWith(",", h) || line.startsWith(">", h) ) { //better way of saying line.substring(i, i + 1).equals(",")
+								itemNameAndPrice.add(line.substring(0, h));
+								line = line.substring(line.indexOf(",") + 2);
+								h = 0;
 							}
 						}
-						String[] options = new String[itemsPrices.size()];
-						int[] prices = new int[itemsPrices.size()];
-						int[] effectiveness = new int[itemsPrices.size()];
+						String[] options = new String[itemNameAndPrice.size()];
+						int[] prices = new int[itemNameAndPrice.size()];
+						int[] effectiveness = new int[itemNameAndPrice.size()];
 
-						for (int d = 0; d < itemsPrices.size(); d++) {
-							prices[d] = Integer.parseInt(itemsPrices.get(d).substring(0, 1));
-							int itemEnd = 0;
-							for (int q = 2; q < itemsPrices.size() - 1; q++) {
-								if (itemsPrices.get(d).startsWith(",", q))
-									itemEnd = q;
-							}
-							options[d] = itemsPrices.get(d).substring(2, itemEnd);
-							effectiveness[d] = Integer.parseInt(itemsPrices.get(d).substring(itemEnd + 1));
+						for (int d = 0; d < itemNameAndPrice.size(); d++) {
+							String itemAtLocation = itemNameAndPrice.get(d);
+							int startItem = locationString(itemAtLocation), startEffectiveness = locationInteger(itemAtLocation);
+							prices[d] = Integer.parseInt(itemAtLocation.substring(0, locationString(itemAtLocation) - 1));
+							options[d] = itemAtLocation.substring(startItem, locationInteger(itemAtLocation) - 1);
+							effectiveness[d] = Integer.parseInt(itemAtLocation.substring(startEffectiveness));
 						}
 						String item = (String) JOptionPane.showInputDialog(null,
-								n.getDialogue(i).substring(0, n.getDialogue().size() - 1),
+								n.getDialogue(i).substring(0, n.getDialogue(i).indexOf(":") + 1),
 								name,
 								JOptionPane.PLAIN_MESSAGE,
 								null,
@@ -671,8 +672,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								}
 							}
 						} else if (o == JOptionPane.NO_OPTION) {
-							JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE);
-							return;
+							i = n.getDialogue().size(); //read message instead at the end
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, n.getDialogue(i), name, JOptionPane.PLAIN_MESSAGE);
@@ -718,13 +718,11 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 						clipMusic.setMicrosecondPosition(clipTimePosition);
 						clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 					}
+					answer = ""; //reset answer
 				}
 			}
 			if (!infiniteTalk) {
 				n.setTalkedTo(true);
-			}
-			if (shop) { //shops have an answer, so they should also give their thanks after you shop
-				JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE); //get a rid of irregular space
 			}
 			if (nurse) {
 				if (answer.equals("yes ")) {
@@ -775,6 +773,33 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			JOptionPane.showMessageDialog(null, "Thank you for doing this!", name, JOptionPane.PLAIN_MESSAGE);
 		}
 	}
+	public int locationString(String m) {
+		boolean integer = false;
+		for(int i = 0; i < m.length(); i++) {
+			char a = m.charAt(i);
+			if(Character.isDigit(a)) {
+				integer = true;
+				break;
+			}
+		}
+		if(!integer)
+			return -1;
+		for(int i = 0; i < m.length(); i++) {
+			char a = m.charAt(i);
+			if(Character.isAlphabetic(a))
+				return i;
+		}
+		return -1;
+	}
+	public int locationInteger(String m) {
+		for(int i = m.length() - 1; i > 0; i--) {
+			char a = m.charAt(i);
+			if(Character.isLetter(a)) {
+					return (i + 2);
+			}
+		}
+		return -1;
+	}
 	public String heal() {
 		String[] PokemonNames;
 		String names = "";
@@ -814,19 +839,46 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		}
 		return r;
 	}
+	public void updateBoard() { //only care about updating doors and updating people spoken to
+		Scanner reader = null;
+		reader = readText(currentLocation, reader);
+		Things[][] updateBoard = new Things[20][20];
+		for (int i = 0; i < updateBoard.length; i++) {
+			for (int c = 0; c < updateBoard[0].length; c++) {
+				int currentThing = -1;
+				try { //regular drawing, not a connection
+					currentThing = reader.nextInt();
+				} catch (Exception e) { //leads to another path
+					reader.next();
+				}
+				if(currentThing == 12 || currentThing == 6) {
+					String n = "";
+					while (!n.contains(">"))
+						n = reader.next();
+				} else if(currentThing == 7) {
+					String n = "";
+					while(!n.contains("<"))
+						n = reader.next();
+				} else if(currentThing == 4 && currentBoard[i][c].isDoor()) { //make the door into a path when saved
+					currentBoard[i][c] = new Things(currentThing,
+							i * Width / currentBoard.length,
+							c * Height / currentBoard[0].length,
+							Width / currentBoard[0].length,
+							Height / currentBoard.length);
+				}
+				updateBoard[i][c] = currentBoard[i][c];
+			}
+		}
+		usedBoards.set(currentLocation.compareTo("A"), updateBoard); //update the last board they were on and creates a new one
+		repaint();
+	}
 	public void setBoard (String location, boolean start) {
 		if (player.getPokemon().size() == 0 && location.equals("C")) {
 			JOptionPane.showMessageDialog(null, "You should probably get a pokemon from Professor Oak before continuing", "Pokemon", JOptionPane.PLAIN_MESSAGE);
 			return;
 		}
 		if(!start) { //this makes it easier to update board
-			Things[][] updateBoard = new Things[20][20];
-			for (int i = 0; i < updateBoard.length; i++) {
-				for (int c = 0; c < updateBoard[0].length; c++) {
-					updateBoard[i][c] = currentBoard[i][c];
-				}
-			}
-			usedBoards.set(currentLocation.compareTo("A"), updateBoard); //update the last board they were on and creates a new one
+			updateBoard();
 		}
 		Things[][] newBoard = new Things[20][20];
 		if(usedBoards.get(location.compareTo("A")) == null) {
