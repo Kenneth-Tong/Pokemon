@@ -35,7 +35,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	private int moveAmount;
 	private final int Height;
 	private final int Width;
-	public static boolean pokemonFight = false, playerTurn = true, gameFinished = false;
+	public static boolean pokemonFight = false, playerTurn = true, gameFinished = false, talking = true;
 	private Pokemon appear, pokemonFighter; //Will change all the time due to constant new Pokemon created
 	private HotBar hotbar;
 	public static Color stage, sky;
@@ -421,7 +421,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	public void actionPerformed (ActionEvent e){
 		if (!pokemonFight) {
 			if (player.isLost()) {
+				talking = false;
 				currentLocation = "A";
+				updateBoard();
+				repaint();
 				player.setLost(false);
 				JOptionPane.showMessageDialog(null, "Be careful next time! Give your Pokemon a rest for a bit before you continue " + player.getName() + ".", "Nurse Joy", JOptionPane.PLAIN_MESSAGE);
 				JOptionPane.showMessageDialog(null, "Pokemon Healed:" + heal(), "", JOptionPane.INFORMATION_MESSAGE);
@@ -433,6 +436,9 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				hotbar.reset();
 				setBoard(currentLocation, false);
 			} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
+				talking = false;
+				if(opponentPlayer.getName().equals("Team Rocket Leader Rachel"))
+					gameFinished = true;
 				if(opponentPlayer != null) {
 					getThingSimilar(opponentPlayer).setTalkedTo(true); //they won!
 					opponentPlayer = null;
@@ -440,7 +446,6 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				appear = null;
 				hotbar.reset();
 			}
-			updateBoard();
 			moveAmount = player.getVelocity(); //always reset just in case if on bike
 			player.moveX();
 			checkX();
@@ -453,7 +458,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		repaint();
 	}
 	public void createPokemon () {
-		if (!pokemonFight) {
+		if (!pokemonFight && !talking) {
 			if (!currentLocation.equals("I") && !currentLocation.equals("J")) {
 				int randomPokemon = (int) (Math.random() * 4);
 				appear = new Pokemon(currentLocation, randomPokemon);
@@ -502,11 +507,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	}
 	public void talkToPerson (Things n){ //talking to a person
 		boolean infiniteTalk = false, gift = false, nurse = false;
+		talking = true;
 		String answer = "", name = n.getName();
 		int k = 0; //starting element
 		if (name.contains("!")) {
-			if(name.contains("@"))
-				name = name.substring(0, name.length() - 1);
 			infiniteTalk = true;
 			name = name.substring(0, n.getName().length() - 1);
 		}

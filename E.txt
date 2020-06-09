@@ -3,7 +3,7 @@
 2 4 4 4 4 4 4 2 4 4 4 4 6 Pokeball Shop> 2 8 4 4 4 4 2
 2 8 8 8 8 8 8 2 6 Lobby> 4 4 4 4 2 8 4 7 Trainer Ethan;> 5 Pokeball> Hey there! I'm restocking on Pokeballs so I can't sell anything at the moment...|> But here, have some extras as a gift for stopping by!>< 4 4 2
 2 2 2 2 2 2 2 2 4 4 4 4 4 2 8 4 4 4 4 2
-2 7 Sofia@> Welcome to my store! Do you want to buy something?|> We sell lots of sweets: 5 Milk-Chocolate 10, 15 Dark-Chocolate 10, 20 Oreo-Cake 20, 5 Vanilla-Cake 10, 10 Almond-Sponge Cake 15, 30 Velvet-Cake 30> Come back if you need any sweets!>< 4 4 4 4 4 4 4 4 4 4 4 2 8 8 8 8 8 2
+2 7 Sofia!> Welcome to my store! Do you want to buy something?|> We sell lots of sweets: 5 Milk-Chocolate 10, 15 Dark-Chocolate 10, 20 Oreo-Cake 20, 5 Vanilla-Cake 10, 10 Almond-Sponge Cake 15, 30 Velvet-Cake 30> Come back if you need any sweets!>< 4 4 4 4 4 4 4 4 4 4 4 2 8 8 8 8 8 2
 2 4 4 4 4 4 4 2 6 Sofia's Sweets - Open> 4 4 4 4 2 2 2 2 2 2 2
 2 6 Choclates> 4 6 Cakes> 13 13 13 2 4 4 7 Pokemon Doctor Finn;> 2 Apple> Be careful! The sweet shop isn't good for your Pokemon!|> Take it from me, I know what I'm doing.> At least try to avoid them!>< 4 4 4 4 4 4 4 4 2
 2 9 4 2 2 2 2 2 4 4 4 4 4 4 4 4 4 6 Coconut Mall> 4 2

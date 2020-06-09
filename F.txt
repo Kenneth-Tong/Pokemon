@@ -16,5 +16,5 @@
 10 8 4 10 10 10 10 10 10 10 10 4 4 10 4 4 4 4 8 10
 10 8 4 10 13 13 13 13 13 13 10 4 4 10 4 4 7 Uther!> This hotel is a bit small, wish I'd choosen a bigger one.>< 4 8 10
 10 8 4 6 Snacks> 4 4 4 4 4 4 10 4 4 4 4 4 4 4 8 10
-10 8 4 4 4 4 4 4 7 Diana@!> Hey there, what are you looking to buy?|> We have some items that you and your pokemon might like: 5 Fruit-Cup 10, 15 Orange-Juice 15, 10 Soda 10, 25 Berrie 20, 15 Cookie 10, 50 Egg-and-Cheese-Sandwich 50> Thanks for shopping!>< 8 10 4 4 4 4 4 4 4 8 10
+10 8 4 4 4 4 4 4 7 Diana!> Hey there, what are you looking to buy?|> We have some items that you and your pokemon might like: 5 Fruit-Cup 10, 15 Orange-Juice 15, 10 Soda 10, 25 Berrie 20, 15 Cookie 10, 50 Egg-and-Cheese-Sandwich 50> Thanks for shopping!>< 8 10 4 4 4 4 4 4 4 8 10
 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
