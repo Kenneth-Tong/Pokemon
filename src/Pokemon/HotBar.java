@@ -101,6 +101,7 @@ public class HotBar extends JPanel implements ActionListener {
 		super.add(loadout);
 
 		panel.revalidate();
+		this.repaint();
 		panel.repaint();
 	}
 	public void actionPerformed(ActionEvent e) {
