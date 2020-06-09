@@ -275,7 +275,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				repaint();
 				hotbar.checkFight(); //checks the current battle
 			}
-		} else if (!playerTurn && !appear.hasFainted()) {
+		} else if (!appear.hasFainted()) {
 			int move;
 			PokemonMove moveName;
 			if (!appear.hasMoves()) {
@@ -348,11 +348,13 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				repaint();
 				hotbar.checkFight();
 			}
-			if(appear.getStageTurn() == 0 && player.getPokemon(0).getStageTurn() == 0) {
-				resetStage();
+			if(pokemonFight) {
+				if (appear.getStageTurn() == 0 && player.getPokemon(0).getStageTurn() == 0) {
+					resetStage();
+				}
+				appear.turnPass();
+				repaint();
 			}
-			appear.turnPass();
-			repaint();
 		}
 	}
 
@@ -421,20 +423,19 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	public void actionPerformed (ActionEvent e){
 		if (!pokemonFight) {
 			if (player.isLost()) {
-				talking = false;
-				currentLocation = "A";
-				updateBoard();
+				setBoard("A", false);
 				repaint();
+				talking = false;
 				player.setLost(false);
 				JOptionPane.showMessageDialog(null, "Be careful next time! Give your Pokemon a rest for a bit before you continue " + player.getName() + ".", "Nurse Joy", JOptionPane.PLAIN_MESSAGE);
 				JOptionPane.showMessageDialog(null, "Pokemon Healed:" + heal(), "", JOptionPane.INFORMATION_MESSAGE);
-				getThingSimilar(opponentPlayer).setLineAt(1);
-				getThingSimilar(opponentPlayer).setTalkedTo(false);
-				currentLocation = "A";
-				opponentPlayer = null; //reset progress
+				if(opponentPlayer != null) {
+					getThingSimilar(opponentPlayer).setLineAt(1);
+					getThingSimilar(opponentPlayer).setTalkedTo(false);
+					opponentPlayer = null; //reset progress
+				}
 				appear = null;
 				hotbar.reset();
-				setBoard(currentLocation, false);
 			} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
 				talking = false;
 				if(opponentPlayer.getName().equals("Team Rocket Leader Rachel"))
@@ -761,6 +762,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		} else {
 			JOptionPane.showMessageDialog(null, n.getDialogue().get(n.getDialogue().size() - 1), name, JOptionPane.PLAIN_MESSAGE);
 		}
+		talking = false;
 	}
 	public void talkToTerry () {
 		String name = "Gym Leader Terry";
@@ -976,11 +978,13 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			currentBoard = usedBoards.get(location.compareTo("A")); //new board
 		}
 		if(!start) { //only will not run in beginning
-			for (int i = 0; i < newBoard.length; i++) { //draw board
-				for (int c = 0; c < newBoard[0].length; c++) {
-					if (currentBoard[i][c].getConnectingLocation().equals(currentLocation)) {
-						player.setLocation(i * Width / newBoard.length + Width / (4 * newBoard[0].length),
-								c * Height / newBoard[0].length + Width / (4 * newBoard[0].length));
+			if(!player.isLost()) {
+				for (int i = 0; i < newBoard.length; i++) { //draw board
+					for (int c = 0; c < newBoard[0].length; c++) {
+						if (currentBoard[i][c].getConnectingLocation().equals(currentLocation)) {
+							player.setLocation(i * Width / newBoard.length + Width / (4 * newBoard[0].length),
+									c * Height / newBoard[0].length + Width / (4 * newBoard[0].length));
+						}
 					}
 				}
 			}

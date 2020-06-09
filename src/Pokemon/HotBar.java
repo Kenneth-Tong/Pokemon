@@ -14,7 +14,7 @@ public class HotBar extends JPanel implements ActionListener {
 	private JButton inventory, pokemon, stats, loadout, key;
 	private JPanel panel;
 	//Add during attacking
-	private JButton pokemonAttack, attackItems, pokemonTeamAttack, fleeAttack; //attack means it's a move only during pokemonfight
+	private JButton pokemonAttack, attackItems, pokemonTeamAttack, fleeAttack, attackOpponent; //attack means it's a move only during pokemonfight
 	private boolean playerFight, caught = false;
 	private Pokemon opponentPokemon;
 
@@ -66,6 +66,10 @@ public class HotBar extends JPanel implements ActionListener {
 		fleeAttack.addActionListener(this);
 		super.add(fleeAttack);
 
+		attackOpponent = new JButton("View Opponent");
+		attackOpponent.addActionListener(this);
+		super.add(attackOpponent);
+
 		player = p;
 		this.playerFight = playerFight;
 		this.opponentPokemon = opponentPokemon;
@@ -78,6 +82,7 @@ public class HotBar extends JPanel implements ActionListener {
 		super.remove(attackItems);
 		super.remove(pokemonAttack);
 		super.remove(fleeAttack);
+		super.remove(attackOpponent);
 
 		key = new JButton("Key");
 		key.addActionListener(this);
@@ -150,6 +155,9 @@ public class HotBar extends JPanel implements ActionListener {
 				}
 				if (btn == pokemonTeamAttack) {
 					switchPokemonTeam(pokemonTeamNames, pokemonList);
+				}
+				if (btn == attackOpponent) {
+					attackOpponent();
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, "It is not your turn yet", "Battle", JOptionPane.ERROR_MESSAGE);
@@ -236,13 +244,18 @@ public class HotBar extends JPanel implements ActionListener {
 
 		}
 	}
+	public void attackOpponent() {
+		JOptionPane.showMessageDialog(null, "Opponent Name: " + opponentPokemon.getName() + "\nHealth: " + opponentPokemon.getHealth(), "Opponent Pokemon", JOptionPane.INFORMATION_MESSAGE);
+	}
 	public void playerFlee() {
 		if(!playerFight) {
 			int escaped = (int) (Math.random() * 3);
 			if (escaped == 0) {
 				JOptionPane.showMessageDialog(null, "You fled successfully!", "Flee", JOptionPane.INFORMATION_MESSAGE);
 				GuiMap.pokemonFight = false;
-				panel.requestFocus();
+				GuiMap.clipFight.stop();
+				GuiMap.clipMusic.setMicrosecondPosition(GuiMap.clipTimePosition);
+				GuiMap.clipMusic.loop(Clip.LOOP_CONTINUOUSLY);
 			} else {
 				JOptionPane.showMessageDialog(null, "You were unable to flee!", "Flee", JOptionPane.INFORMATION_MESSAGE);
 				GuiMap.playerTurn = false;
@@ -315,9 +328,11 @@ public class HotBar extends JPanel implements ActionListener {
 				panel.repaint();
 				checkFight();
 			}
-			player.getPokemon(0).turnPass();
-			GuiMap.playerTurn = false;
-			checkFight(); //checks the current battle
+			if(GuiMap.pokemonFight) {
+				player.getPokemon(0).turnPass();
+				GuiMap.playerTurn = false;
+				checkFight(); //checks the current battle
+			}
 		} else {
 			JOptionPane.showMessageDialog(null, "You have no more move points for " + moves[moveLocation], player.getPokemon(0).getName(), JOptionPane.ERROR_MESSAGE);
 		}
