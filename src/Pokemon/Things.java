@@ -124,22 +124,24 @@ public class Things {
 			hitBox = new Rectangle(posX, posY, width, height);
 			drawBox = new Rectangle(posX, posY, width, height);
 			name = "Sign";
-		} else if (n == 12){ //chest
-			color = new Color(139,69,19);
+		} else if (n == 12) { //chest
+			color = new Color(139, 69, 19);
 			chest = true;
 			passable = false;
 			String itemName = "";
-			if(locationItem(m) > -1) {
+			if (locationItem(m) > -1) {
 				itemName = m.substring(locationItem(m)); //get item name
 				amountOfItems = Integer.parseInt(m.substring(0, locationItem(m) - 1)); //get item
 			} else {
 				itemName = m;
 				amountOfItems = 1;
 			}
-			if(itemName.contains("Pokeball")) {
+			if (itemName.contains("Pokeball")) {
 				item = new Pokeball("Pokeball", amountOfItems);
-			} else if(itemName.contains("Key")) {
+			} else if (itemName.contains("Key")) {
 				item = new Key(itemName, amountOfItems, false); //chests will never have the team rocket key, only joradan
+			} else if(itemName.contains("Super")) {
+				item = new Bike("Super Bike", 1);
 			} else {
 				item = new HealItem(itemName, amountOfItems);
 			}

@@ -2,8 +2,8 @@
 10 4 4 4 4 4 4 4 4 4 4 4 4 12 Super Bike> 10 10 10 10 10 10
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 10 10 10 10 10 10
 10 15 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
-10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 10
-10 4 11 11 11 7 Team Rocket Goon#> Onix3> I see you've made it into our base!|> I don't know how you got here but our team leader wouldn't be happy, so I'm going to have to force you out!#> I may have lost, but you will never beat our leader!>< 11 11 11 11 11 11 11 11 11 11 7 Nurse Linda!> Wow another trainer! Not many trainers make it here.|> After Team Rocket is defeated you should tell Terry, I'm sure he'd be happy.|> Do you need your Pokemon to be healed?/> yes Alright, here you go! Remember to be careful.> no Come back if you need any help!>< 11 4 10
+10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 Nurse Linda!> Wow another trainer! Not many trainers make it here.|> After Team Rocket is defeated you should tell Terry, I'm sure he'd be happy.|> Do you need your Pokemon to be healed?/> yes Alright, here you go! Remember to be careful.> no Come back if you need any help!>< 10
+10 4 11 11 11 7 Team Rocket Goon#> Onix3> I see you've made it into our base!|> I don't know how you got here but our team leader wouldn't be happy, so I'm going to have to force you out!#> I may have lost, but you will never beat our leader!>< 11 11 11 11 11 11 11 11 11 11 11 11 4 10
 10 4 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 4 K
 10 4 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 6 Team Rocket's Gym> 4 10
 10 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 10
@@ -15,6 +15,6 @@
 10 4 4 4 4 4 4 10 4 9 9 9 9 4 10 4 9 9 4 10
 10 4 4 4 4 4 4 10 4 9 9 9 9 4 10 4 9 9 4 10
 10 10 10 10 10 10 4 10 4 9 9 9 9 4 10 4 9 9 4 10
-10 4 4 4 4 4 4 4 4 4 4 4 4 4 10 4 9 7 Team Rocket Leader Rachel#> Castform3> I'm suprised you made it this far, many trainers usually never get past the entrence|> For you, I guess you got lucky.|> I'm guessing you beat Jordan to get that key huh.|> Well, unlike Jordan, I'm a bit stronger because I've got the legendary Castform!|> I guess this battle will be your last!#> I cannot believe it. A new trainer like you beating me out of all people? I guess my reign is over...>< 4 10
+10 4 4 4 4 4 4 4 4 4 4 4 4 4 10 4 9 7 Team Rocket Leader Rachel#> Castform3> I'm surprised you made it this far, many trainers usually never get past the entrence|> For you, I guess you got lucky.|> I'm guessing you beat Jordan to get that key huh.|> Well, unlike Jordan, I'm a bit stronger because I've got the legendary Castform!|> I guess this battle will be your last!#> I cannot believe it. A new trainer like you beating me out of all people? I guess my reign is over...>< 4 10
 10 12 Hard Candy> 4 4 4 4 4 4 4 4 4 4 4 4 10 4 4 4 4 10
 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10

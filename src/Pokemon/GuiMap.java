@@ -44,11 +44,10 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		Height = h;
 		Width = w;;
 		player = p;
-		//player.setLocation(10, 570);
-		player.setLocation(200, 300);
+		player.setLocation(10, 570);
 		for(int i = 0; i < 13; i++) //preset board so all values are null
 			usedBoards.add(null);
-		setBoard("L", true); //starting area
+		setBoard("B", true); //starting area
 		Timer timer = new Timer(25, this);
 		timer.start();
 		super.setLayout(null);
@@ -406,7 +405,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				"You're all set, " + answer + ", welcome and explore your new world!");
 	}
 
-	public void keyReleased (KeyEvent e){
+	public void keyReleased (KeyEvent e) {
 		int key = e.getKeyCode();
 		if (!pokemonFight) {
 			if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP)
@@ -422,17 +421,17 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	public void actionPerformed (ActionEvent e){
 		if (!pokemonFight) {
 			if (player.isLost()) {
-				currentLocation = "B";
+				currentLocation = "A";
 				player.setLost(false);
 				JOptionPane.showMessageDialog(null, "Be careful next time! Give your Pokemon a rest for a bit before you continue " + player.getName() + ".", "Nurse Joy", JOptionPane.PLAIN_MESSAGE);
-				String PokemonHealed = heal();
-				JOptionPane.showMessageDialog(null, "Pokemon Healed:" + PokemonHealed, "", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Pokemon Healed:" + heal(), "", JOptionPane.INFORMATION_MESSAGE);
 				getThingSimilar(opponentPlayer).setLineAt(1);
 				getThingSimilar(opponentPlayer).setTalkedTo(false);
 				currentLocation = "A";
 				opponentPlayer = null; //reset progress
 				appear = null;
 				hotbar.reset();
+				setBoard(currentLocation, false);
 			} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
 				if(opponentPlayer != null) {
 					getThingSimilar(opponentPlayer).setTalkedTo(true); //they won!
@@ -441,6 +440,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				appear = null;
 				hotbar.reset();
 			}
+			updateBoard();
 			moveAmount = player.getVelocity(); //always reset just in case if on bike
 			player.moveX();
 			checkX();
