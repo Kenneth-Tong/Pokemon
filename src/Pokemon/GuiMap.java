@@ -152,8 +152,8 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 						if (!player.isFishing() && currentBoard[i][c].isWater() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							player.stopPlayerMovement();
 							if(!player.hasFishingRod()) {
-								JOptionPane.showMessageDialog(null, "You dom't have a fishing rod yet!", "Inventory", JOptionPane.ERROR_MESSAGE);
-								break;
+								JOptionPane.showMessageDialog(null, "You don't have a fishing rod yet!", "Inventory", JOptionPane.ERROR_MESSAGE);
+								return;
 							}
 							int answer = JOptionPane.showConfirmDialog(null,
 									"Do you want to fish?",
@@ -466,6 +466,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			player.addInventory(new Key("Key", 1, false));
 			player.addInventory(new Key("Key", 1, false));
 			player.addInventory(new Key("Team Rocket Key", 1, true));
+			player.addInventory(new Bike("Super Bike", 1));
 		}
 		JOptionPane.showMessageDialog(null,
 				"You're all set, " + answer + ", welcome and explore your new world!");
