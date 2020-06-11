@@ -85,7 +85,7 @@ public class HotBar extends JPanel implements ActionListener {
 		super.remove(attackOpponent);
 
 		key = new JButton("Key");
-		key.addActionListener(this);
+		key.addActionListener(this); //team spaceship
 		super.add(key);
 
 		inventory = new JButton("Inventory");
@@ -457,7 +457,7 @@ public class HotBar extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
 				}
 				return;
-			} else if (player.getInventory(inventoryLocation, false) instanceof Badge || player.getInventory(inventoryLocation, false) instanceof Key) {
+			} else if (player.getInventory(inventoryLocation, false) instanceof Badge || player.getInventory(inventoryLocation, false) instanceof Key || player.getInventory(inventoryLocation, false) instanceof FishingRod ) {
 				if(GuiMap.pokemonFight)
 					JOptionPane.showMessageDialog(null, "You cannot use that item during this time.", "Inventory", JOptionPane.ERROR_MESSAGE);
 				else

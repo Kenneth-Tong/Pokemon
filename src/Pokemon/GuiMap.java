@@ -94,12 +94,6 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			g.setColor(appear.getColor());
 			g.fillRect(Width - 200, Height / 3 - 50, 100, 100);
 
-//			JLabel opponentName = new JLabel(appear.getName());
-//			opponentName.setFont(new Font("Ariel", Font.BOLD, 15));
-//			opponentName.setForeground(appear.getColor());
-//			super.add(opponentName);
-//			opponentName.setLocation(Width - 100 - appear.getName().length() / 2, Height / 3 + 100);
-
 			g.setColor(Color.BLACK);
 			g.drawRect(Width - 200, Height / 3 - 75, 100, 15); //health boarder
 
@@ -108,19 +102,8 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				g.fillRect(Width - 199, Height / 3 - 74, 100 * appear.getHealth() / appear.getMaxHealth() - 1, 14); //actual health
 			}
 
-//			JLabel opponentHealth = new JLabel(Integer.toString(appear.getHealth()));
-//			opponentHealth.setFont(new Font("Ariel", Font.BOLD, 15));
-//			opponentName.setForeground(Color.WHITE);
-//			super.add(opponentHealth);
-//			opponentHealth.setLocation(Width - 100 - Integer.toString(appear.getHealth()).length() / 2, Height / 3 - 74);
-
 			g.setColor(player.getPokemon().get(0).getColor());
 			g.fillRect(50, Height * 2 / 3 - 50, 200, 200);
-
-//			JLabel PokemonName = new JLabel(player.getPokemon().get(0).getName());
-//			super.add(PokemonName);
-//			opponentName.setForeground(player.getPokemon().get(0).getColor());
-//			PokemonName.setLocation(150 - player.getPokemon().get(0).getName().length() / 2, Height * 2/ 3 + 250);
 
 			g.setColor(Color.BLACK);
 			g.drawRect(50, Height * 2 / 3 - 85, 200, 20);
@@ -129,28 +112,63 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				g.setColor(Color.RED.darker());
 				g.fillRect(51, Height * 2 / 3 - 84, 200 * player.getPokemon().get(0).getHealth() / player.getPokemon().get(0).getMaxHealth() - 1, 19);
 			}
-//			JLabel PokemonHealth = new JLabel(Integer.toString(player.getPokemon().get(0).getHealth()));
-//			PokemonHealth.setFont(new Font("Ariel", Font.BOLD, 15));
-//			PokemonHealth.setForeground(Color.WHITE);
-//			super.add(PokemonHealth);
 		}
 	}
 
 	public void keyPressed(KeyEvent e) {
 		if (!pokemonFight) {
 			int key = e.getKeyCode();
-			if (key == KeyEvent.VK_DOWN)
+			if (key == KeyEvent.VK_DOWN) {
 				player.setMoveY(moveAmount);
-			if (key == KeyEvent.VK_UP)
+				if (player.isFishing()) {
+					JOptionPane.showMessageDialog(null, "You stopped fishing", "Fishing", JOptionPane.INFORMATION_MESSAGE);
+					player.setFishing(false); //if they move they can't catch anything
+				}
+			}
+			if (key == KeyEvent.VK_UP) {
 				player.setMoveY(-moveAmount);
-			if (key == KeyEvent.VK_RIGHT)
+				if(player.isFishing()) {
+					JOptionPane.showMessageDialog(null, "You stopped fishing", "Fishing", JOptionPane.INFORMATION_MESSAGE);
+					player.setFishing(false); //if they move they can't catch anything
+				}
+			}
+			if (key == KeyEvent.VK_RIGHT) {
 				player.setMoveX(moveAmount);
-			if (key == KeyEvent.VK_LEFT)
+				if(player.isFishing()) {
+					JOptionPane.showMessageDialog(null, "You stopped fishing", "Fishing", JOptionPane.INFORMATION_MESSAGE);
+					player.setFishing(false); //if they move they can't catch anything
+				}
+			}
+			if (key == KeyEvent.VK_LEFT) {
 				player.setMoveX(-moveAmount);
+				if(player.isFishing()) {
+					JOptionPane.showMessageDialog(null, "You stopped fishing", "Fishing", JOptionPane.INFORMATION_MESSAGE);
+					player.setFishing(false); //if they move they can't catch anything
+				}
+			}
 			if (key == KeyEvent.VK_SPACE) {
 				for (int i = 0; i < currentBoard.length; i++) { //draw board
 					for (int c = 0; c < currentBoard[0].length; c++) {
-						if (!currentBoard[i][c].getConnectingLocation().equals("") && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+						if (!player.isFishing() && currentBoard[i][c].isWater() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+							player.stopPlayerMovement();
+							if(!player.hasFishingRod()) {
+								JOptionPane.showMessageDialog(null, "You dom't have a fishing rod yet!", "Inventory", JOptionPane.ERROR_MESSAGE);
+								break;
+							}
+							int answer = JOptionPane.showConfirmDialog(null,
+									"Do you want to fish?",
+									"Door",
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.QUESTION_MESSAGE);
+							if (answer == JOptionPane.YES_OPTION) {
+								if(player.hasSuperFishingRod())
+									JOptionPane.showMessageDialog(null, "You cast your super fishing pole into the water...", "Fishing", JOptionPane.INFORMATION_MESSAGE);
+								else
+									JOptionPane.showMessageDialog(null, "You cast your fishing pole into the water...", "Fishing", JOptionPane.INFORMATION_MESSAGE);
+								player.setFishing(true);
+							}
+						}
+						else if (!currentBoard[i][c].getConnectingLocation().equals("") && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							setBoard(currentBoard[i][c].getConnectingLocation(), false);
 						} else if (currentBoard[i][c].isSign() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							readMessage(currentBoard[i][c]);
@@ -228,8 +246,11 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 		JOptionPane.showMessageDialog(null, n.getMessage());
 	}
 
-	public void getPokemon() { //whether they found a Pokemon or not
-		if (!pokemonFight) {
+	public void actionInteraction() { //whether they found a Pokemon or not
+		if(player.isFishing()) {
+			fishing();
+		}
+		else if (!pokemonFight) {
 			if (player.getPokemon().size() > 0) {
 				for (int i = 0; i < currentBoard.length; i++) { //draw board
 					for (int c = 0; c < currentBoard[0].length; c++) {
@@ -244,6 +265,49 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				}
 			}
 		}
+	}
+
+	public void fishing() {
+		int random = (int) (Math.random() * 1000000000) + 1; //low chance!
+		if(player.hasSuperFishingRod()) {
+			if (random % 222 == 0) {
+				Item item = getFishingItem();
+				player.addInventory(item);
+				JOptionPane.showMessageDialog(null, "You got a " + item.getName() + "!", "Caught!", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "[Check your inventory for more information]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+				player.setFishing(false);
+			} else if (random % 333 == 0) {
+				player.addPokemon(new Pokemon(currentLocation, 3, "Magikarp"));
+				JOptionPane.showMessageDialog(null, "You got a Magikarp!", "Caught!", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "[Check your Pokedex for more information]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+				player.setFishing(false);
+			}
+		} else {
+			if (random % 711 == 0) {
+				Item item = getFishingItem();
+				player.addInventory(item);
+				JOptionPane.showMessageDialog(null, "You got a " + item.getName() + "!", "Caught!", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "[Check your inventory for more information]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+				player.setFishing(false);
+			} else if (random % 999 == 0) {
+				player.addPokemon(new Pokemon(currentLocation, 3, "Magikarp"));
+				JOptionPane.showMessageDialog(null, "You got a Magikarp!", "Caught!", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "[Check your Pokedex for more information]", "Inventory", JOptionPane.INFORMATION_MESSAGE);
+				player.setFishing(false);
+			}
+		}
+	}
+
+	public Item getFishingItem() {
+		String[] names = new String[] {"Apple", "Pie", "Pokeball", "Hard Candy", "Soda", "Ice cream", "Blueberry", "Strawberry", "Chocolate Bar", "Jello", "Orange", "Cotton Candy", "Banana"};
+		int random = (int) (Math.random() * names.length);
+		Item item;
+		if(names[random].equals("Pokeball")) {
+			item = new Pokeball(names[random], 1);
+		} else {
+			item = new HealItem(names[random], 1);
+		}
+		return item;
 	}
 
 	public void PokemonFight(Pokemon p, boolean f) { //battle a person
@@ -452,7 +516,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 			checkX();
 			player.moveY();
 			checkY();
-			getPokemon();
+			actionInteraction();
 		} else {
 			PokemonActions();
 		}
@@ -481,9 +545,9 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	public void checkX () {
 		for (int i = 0; i < currentBoard.length; i++) {
 			for (int c = 0; c < currentBoard[0].length; c++) {
-				if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
+				if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor() || currentBoard[i][c].isWater()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
 					player.resetX();
-				} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+				} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor() || currentBoard[i][c].isWater()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 					player.resetX();
 				}
 			}
@@ -495,9 +559,9 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	public void checkY () {
 		for (int i = 0; i < currentBoard.length; i++) { //draw board
 			for (int c = 0; c < currentBoard[0].length; c++) {
-				if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
+				if ((currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() || currentBoard[i][c].isDoor() || currentBoard[i][c].isWater()) && isOverlapping(player.getHitBox(), currentBoard[i][c].getDrawBox())) {
 					player.resetY();
-				} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() ||  currentBoard[i][c].isDoor()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
+				} else if (!(currentBoard[i][c].isPerson() || currentBoard[i][c].isChest() ||  currentBoard[i][c].isDoor() || currentBoard[i][c].isWater()) && !currentBoard[i][c].isPassable() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 					player.resetY();
 				}
 			}
@@ -635,6 +699,8 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 							int startItem = locationString(itemAtLocation), startEffectiveness = locationInteger(itemAtLocation);
 							prices[d] = Integer.parseInt(itemAtLocation.substring(0, locationString(itemAtLocation) - 1));
 							options[d] = itemAtLocation.substring(startItem, locationInteger(itemAtLocation) - 1);
+							if(options[d].contains("-"))
+								options[d] = options[d].replaceAll("-", " ");
 							effectiveness[d] = Integer.parseInt(itemAtLocation.substring(startEffectiveness));
 						}
 						String item = (String) JOptionPane.showInputDialog(null,

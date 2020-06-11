@@ -38,7 +38,7 @@ public class Things {
 	private Rectangle hitBox, drawBox; //draw box is only for drawing, hitBox depends on whether it is a person or an object
 	private String connectingLocation = "", message = " ", name = ""; //name is only for person, message is only for sign
 	private ArrayList<String> dialogue; //person dialogue only
-	private boolean tallGrass = false, passable = false, person = false, sign = false, talkedTo = false, chest = false, rocket = false, door = false; //talk means there are choices, talkedTo means you're done talking to
+	private boolean tallGrass = false, passable = false, person = false, sign = false, talkedTo = false, chest = false, rocket = false, door = false, water = false; //talk means there are choices, talkedTo means you're done talking to
 	private Color color;
 	private int amountOfItems /*only applies to chests*/, lineAt;
 	private Item item;
@@ -62,6 +62,9 @@ public class Things {
 			case 3:
 				color = new Color(102, 178, 255);
 				passable = false;
+				water = true;
+				hitBox = new Rectangle(posX - 5, posY - 5, width + 10, height + 10);
+				drawBox = new Rectangle(posX, posY, width, width);
 				break;
 			case 4:
 				color = new Color(169,169,169);
@@ -97,8 +100,10 @@ public class Things {
 				tallGrass = true;
 				break;
 		}
-		hitBox = drawBox = new Rectangle(posX, posY, width, height);
-		drawBox = new Rectangle(posX, posY, width, height); //Make the collisions more smooth
+		if(!water) {
+			hitBox = drawBox = new Rectangle(posX, posY, width, height);
+			drawBox = new Rectangle(posX, posY, width, height); //Make the collisions more smooth
+		}
 	}
 	public Things(boolean rocket, int posX, int posY, int width, int height) { //door that can be opened
 		this.rocket = rocket;
@@ -183,6 +188,11 @@ public class Things {
 					item = new Key(itemName, amountOfItems, false);
 			} else if (itemName.contains("Bike")) {
 				item = new Bike("Bike", amountOfItems);
+			} else if (itemName.contains("Fishing")) {
+				if(itemName.contains("Super"))
+					item = new FishingRod(itemName, amountOfItems, true);
+				else
+					item = new FishingRod(itemName, amountOfItems, false);
 			} else {
 				item = new HealItem(itemName, amountOfItems);
 			}
@@ -229,6 +239,7 @@ public class Things {
 		}
 		reader.close();
 	}
+	public boolean isWater() { return water; }
 	public boolean isRocket() { return rocket; }
 	public String getMessage() {
 		return message;

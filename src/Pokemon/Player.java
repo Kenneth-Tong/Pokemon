@@ -1,6 +1,7 @@
 package Pokemon;
 
 import Pokemon.Items.Badge;
+import Pokemon.Items.FishingRod;
 import Pokemon.Items.Item;
 import Pokemon.Items.Key;
 import Pokemon.PokemonClass.Pokemon;
@@ -15,7 +16,7 @@ public class Player {
 	private String name, trainerType;
 	private Color color;
 	private int velocity = 3, Height = 15, Width = 15, posX = 0, posY = 0, lastX = 0, lastY = 0, moveX = 0, moveY = 0, pokemonDollar = 0;
-	private boolean lost = false, isOnBike = false, isSuperBike = false;
+	private boolean lost = false, isOnBike = false, isSuperBike = false, fishing = false;
 
 	public Player(String name) {
 		this.name = name;
@@ -114,6 +115,10 @@ public class Player {
 			isSuperBike = false;
 		}
 	}
+
+	public boolean isFishing() { return fishing; }
+
+	public void setFishing(boolean n) { fishing = n; }
 
 	public String getName() {
 		return name;
@@ -241,6 +246,22 @@ public class Player {
 			}
 		}
 		return -1;
+	}
+	public boolean hasFishingRod() {
+		for (Item n : inventory) {
+			if (n instanceof FishingRod) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean hasSuperFishingRod() {
+		for (Item n : inventory) {
+			if (n instanceof FishingRod && ((FishingRod) n).isBestRod()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	public String[] getInventoryNames() {
 		String[] list = new String[inventory.size()];

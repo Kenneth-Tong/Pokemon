@@ -10,9 +10,9 @@ public class Bike extends Item{
         if(name.contains("Super"))
             superBike = true;
     }
-    public void setBike(boolean n, Player player) {
+    public void setBike(boolean getOn, Player player) {
         if(!superBike) {
-            if(n) {
+            if(getOn) {
                 player.setIsOnSuperBike(false);
                 player.setIsOnBike(true);
             } else {
@@ -20,7 +20,7 @@ public class Bike extends Item{
                 player.setIsOnBike(false);
             }
         } else {
-            if(n) {
+            if(getOn) {
                 player.setIsOnBike(false);
                 player.setIsOnSuperBike(true);
             } else {
