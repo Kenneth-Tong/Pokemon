@@ -35,7 +35,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 	private int moveAmount;
 	private final int Height;
 	private final int Width;
-	public static boolean pokemonFight = false, playerTurn = true, gameFinished = false, talking = true;
+	public static boolean pokemonFight = false, playerTurn = true, gameFinished = false, talking = false;
 	private Pokemon appear, pokemonFighter; //Will change all the time due to constant new Pokemon created
 	private HotBar hotbar;
 	public static Color stage, sky;
@@ -166,7 +166,8 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 								else
 									JOptionPane.showMessageDialog(null, "You cast your fishing pole into the water...", "Fishing", JOptionPane.INFORMATION_MESSAGE);
 								player.setFishing(true);
-							}
+							} else
+								return;
 						}
 						else if (!currentBoard[i][c].getConnectingLocation().equals("") && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							setBoard(currentBoard[i][c].getConnectingLocation(), false);
@@ -256,7 +257,7 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 					for (int c = 0; c < currentBoard[0].length; c++) {
 						if (currentBoard[i][c].isTallGrass() && isOverlapping(player.getHitBox(), currentBoard[i][c].getHitBox())) {
 							int random = (int) (Math.random() * 1000000000) + 1; //low chance!
-							if (random % 711 == 0) {
+							if (random % 489 == 0) {
 								createPokemon(); //creates the Pokemon that is found
 								PokemonFight(appear, false); //the fight starts
 							}
@@ -503,11 +504,13 @@ public class GuiMap extends JPanel implements ActionListener, KeyListener {
 				hotbar.reset();
 			} else if (!player.isLost() && appear != null) { //this should not run if the player has just started
 				talking = false;
-				if(opponentPlayer.getName().equals("Team Rocket Leader Rachel"))
-					gameFinished = true;
 				if(opponentPlayer != null) {
-					getThingSimilar(opponentPlayer).setTalkedTo(true); //they won!
-					opponentPlayer = null;
+					if (opponentPlayer.getName().equals("Team Rocket Leader Rachel"))
+						gameFinished = true;
+					if (opponentPlayer != null) {
+						getThingSimilar(opponentPlayer).setTalkedTo(true); //they won!
+						opponentPlayer = null;
+					}
 				}
 				appear = null;
 				hotbar.reset();

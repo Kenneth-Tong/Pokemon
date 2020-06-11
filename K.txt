@@ -1,6 +1,6 @@
 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
 11 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-12 Key> 11 11 11 11 11 11 11 11 3 3 3 3 3 3 3 11 11 3 7 Fisherman Greg;> Super Fishing Rod> I see you've made it to Sand Castle Beach huh?|> Well, I hope you didn't forget that fishing is pretty important!|> Take this, you may need it later!> Ahhh, the cold blue water always is nice to look at.><
+12 Key> 11 11 11 11 11 11 11 11 3 3 3 3 3 3 3 11 11 3 7 Fisherman Greg> I see you've made it to Sand Castle Beach huh?|> Well, I hope you didn't forget that fishing is pretty important!|> I left one my best fishing rods inside the castle but Team Rocket won't let me get it back...|> If you find it keep it. It brings good luck!> Ahhh, the cold blue water always is nice to look at.><
 2 2 2 2 2 2 2 2 2 11 11 3 3 3 11 11 11 5 11 3
 2 2 2 2 2 2 2 2 2 11 5 11 11 11 11 11 11 11 11 5
 2 2 2 2 2 2 2 2 2 11 11 11 11 11 11 11 11 11 11 11

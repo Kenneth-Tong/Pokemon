@@ -76,7 +76,7 @@ public class Things {
 				break;
 			case 8:
 				color = new Color(200,92,92);
-				passable = false;
+				passable = true;
 				break;
 			case 9:
 				color = new Color(210,105,30);
@@ -197,8 +197,12 @@ public class Things {
 				item = new HealItem(itemName, amountOfItems);
 			}
 		}
-		if(name.contains("#"))
-			lineAt = 1;
+		if(name.contains("#")) {
+			if(name.contains(";"))  //Jordan!
+				lineAt = 2;
+			else
+				lineAt = 1;
+		}
 		passable = false;
 		person = true;
 		hitBox = new Rectangle(posX - 5, posY - 5, width + 10, height + 10);
