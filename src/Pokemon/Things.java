@@ -41,7 +41,7 @@ public class Things {
 	private boolean tallGrass = false, passable = false, person = false, sign = false, talkedTo = false, chest = false, rocket = false, door = false, water = false; //talk means there are choices, talkedTo means you're done talking to
 	private Color color;
 	private int amountOfItems /*only applies to chests*/, lineAt;
-	private Item item;
+	private Item item = null;
 
 	public Things(int i, int posX, int posY, int width, int height) {
 		name = Integer.toString(i);
@@ -162,22 +162,12 @@ public class Things {
 		dialogue = m;
 		if(name.contains(";")) { //give item only
 			String itemName = "";
-			if (name.contains("#")) {
-				if (locationItem(m.get(1)) > -1) {
-					itemName = m.get(1).substring(locationItem(m.get(1))); //get item name
-					amountOfItems = Integer.parseInt(m.get(1).substring(0, locationItem(m.get(1)) - 1)); //get item
-				} else {
-					itemName = m.get(0);
-					amountOfItems = 1;
-				}
+			if (locationItem(m.get(0)) > -1) {
+				itemName = m.get(0).substring(locationItem(m.get(0))); //get item name
+				amountOfItems = Integer.parseInt(m.get(0).substring(0, locationItem(m.get(0)) - 1)); //get item
 			} else {
-				if (locationItem(m.get(0)) > -1) {
-					itemName = m.get(0).substring(locationItem(m.get(0))); //get item name
-					amountOfItems = Integer.parseInt(m.get(0).substring(0, locationItem(m.get(0)) - 1)); //get item
-				} else {
-					itemName = m.get(0);
-					amountOfItems = 1;
-				}
+				itemName = m.get(0);
+				amountOfItems = 1;
 			}
 			if (itemName.contains("Pokeball")) {
 				item = new Pokeball("Pokeball", amountOfItems);
@@ -196,12 +186,10 @@ public class Things {
 			} else {
 				item = new HealItem(itemName, amountOfItems);
 			}
-		}
-		if(name.contains("#")) {
-			if(name.contains(";"))  //Jordan!
-				lineAt = 2;
-			else
-				lineAt = 1;
+			m.remove(0);
+			lineAt = 0;
+
+			name = name.substring(0, name.length() - 1);
 		}
 		passable = false;
 		person = true;
